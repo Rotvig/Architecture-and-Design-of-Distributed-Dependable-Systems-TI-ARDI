@@ -23,6 +23,15 @@ namespace PubSubServer
         public MainWindow()
         {
             InitializeComponent();
+            TextBlock.Text = "Pub/Sub Server Starting";
+
+            var subscriberService = new SubscriberService();
+            subscriberService.StartSubscriberService();
+
+            var publisherService = new PublisherService();
+            publisherService.StartPublisherService();
+
+            TextBlock.Text = "Pub/Sub Server running";
         }
     }
 }
