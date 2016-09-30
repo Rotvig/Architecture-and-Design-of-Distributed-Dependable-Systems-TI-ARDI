@@ -1,0 +1,35 @@
+
+% Command \myTable{caption text}{refrence label}{input filename: eq <tables/myTable>}
+% for inserting tables
+\newcommand{\myTable}[3]
+{ 
+    \begin{table}[h]
+    \centering
+    \caption{#1}
+    \label{#2}
+        \input{#3}
+    \end{table}
+}
+% Example on content in table file
+%
+%    \begin{tabular}{rll}
+%    \multicolumn{1}{c}{\textbf{Tapsstørrelse}} &
+%    \multicolumn{1}{c}{\textbf{Målt beregningstid}} \\ \hline
+%       1      &  35,6  $\mu s$     \\[0.05cm] 
+%       2      &  36,5  $\mu s$     \\[0.05cm] 
+%       5      &  32,0  $\mu s$     \\[0.05cm] 
+%       8      &  32,0  $\mu s$     \\[0.05cm] 
+%       10     &  32,0  $\mu s$     \\[0.05cm] 
+%       20     &  32,5  $\mu s$     \\[0.05cm] 
+%       50     &  69,0  $\mu s$     \\[0.05cm] 
+%       80     &  101,5 $\mu s$     \\[0.05cm] 
+%       100    &  124,5 $\mu s$     \\[0.05cm] 
+%       200    &  240,5 $\mu s$     \\[0.05cm] 
+%       500    &  587   $\mu s$     \\[0.05cm] 
+%       800    &  932   $\mu s$     \\[0.05cm] 
+%       1000   &  1164  $\mu s$     \\[0.05cm] 
+%       1024   &  1192  $\mu s$     \\[0.05cm]
+%       \hline
+%       512    &  601   $\mu s$     \\[0.05cm]
+%       513    &  605   $\mu s$     \\
+%    \end{tabular}

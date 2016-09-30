@@ -1,0 +1,18 @@
+\BOOKMARK [0][-]{chapter.1}{1 Introduction}{}% 1
+\BOOKMARK [1][-]{section.1.1}{1.1 Intro to requirements for the exercise project}{chapter.1}% 2
+\BOOKMARK [1][-]{section.1.2}{1.2 Patterns used in the solution}{chapter.1}% 3
+\BOOKMARK [0][-]{chapter.2}{2 Solution}{}% 4
+\BOOKMARK [1][-]{section.2.1}{2.1 Discussion of architecture decisions}{chapter.2}% 5
+\BOOKMARK [1][-]{section.2.2}{2.2 Deployment diagram}{chapter.2}% 6
+\BOOKMARK [1][-]{section.2.3}{2.3 Design and implementation of client}{chapter.2}% 7
+\BOOKMARK [2][-]{subsection.2.3.1}{2.3.1 Intro to design of client}{section.2.3}% 8
+\BOOKMARK [2][-]{subsection.2.3.2}{2.3.2 Class diagram}{section.2.3}% 9
+\BOOKMARK [2][-]{subsection.2.3.3}{2.3.3 Sequence diagram}{section.2.3}% 10
+\BOOKMARK [2][-]{subsection.2.3.4}{2.3.4 Implementation details}{section.2.3}% 11
+\BOOKMARK [1][-]{section.2.4}{2.4 Design and implementation of server}{chapter.2}% 12
+\BOOKMARK [2][-]{subsection.2.4.1}{2.4.1 Intro to design of server}{section.2.4}% 13
+\BOOKMARK [2][-]{subsection.2.4.2}{2.4.2 Class diagram}{section.2.4}% 14
+\BOOKMARK [2][-]{subsection.2.4.3}{2.4.3 Sequence diagram}{section.2.4}% 15
+\BOOKMARK [2][-]{subsection.2.4.4}{2.4.4 Implementation details}{section.2.4}% 16
+\BOOKMARK [0][-]{chapter.3}{3 Discussion of results}{}% 17
+\BOOKMARK [0][-]{chapter.4}{4 Conclusion}{}% 18

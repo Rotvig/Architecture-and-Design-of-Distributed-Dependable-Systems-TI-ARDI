@@ -1,0 +1,42 @@
+% Package for setup of chapters and sections
+\usepackage{titlesec}
+
+
+% % % % % % % % % % % % % % CHAPTER  % % % % % % % % % % % % % % % % % % % % % %
+% Define fontsize for the numbering of the chapters
+\newcommand{\ChapterNumbering}{
+    \usefont{\encodingdefault}{\rmdefault}{b}{n}
+    \fontsize{35}{45}\normalfont\color{ThemeColor}}
+
+% Chapter numbers in margin
+\chapterstyle{hangnum}
+
+% Modifying "\chapterstyle{hangnum}"
+% Changing vertical position of chapter headline
+\renewcommand*{\chapterheadstart}{\vspace*{-20pt}}
+
+% Color setup for chapters
+% Title color
+\renewcommand*{\chaptitlefont}{\bfseries\Huge\color{BlackColor}}
+% Number color
+\renewcommand{\chapnumfont}{\normalfont\ChapterNumbering\color{ThemeColor}}
+
+
+
+
+% % % % % % % % % % % % % % SECTION  % % % % % % % % % % % % % % % % % % % % % %
+% Section numbers in margin
+\hangsecnum
+
+% Color setup for sections
+% Title color
+%\renewcommand\thesection{\color{ThemeColor}\thechapter.\arabic{section}}
+\renewcommand\thesection{\thechapter.\arabic{section}}
+
+% Set numbering depth of sections
+\setsecnumdepth{subsubsection}
+
+% Set the depth of sections included in table of contents
+\settocdepth{subsection}
+
+

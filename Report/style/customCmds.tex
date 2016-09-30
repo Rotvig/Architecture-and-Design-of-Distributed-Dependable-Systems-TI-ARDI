@@ -1,0 +1,76 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                           Custom Commands                                    %
+%                                                                              %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%% FIGURES %%%%%
+% The following commands are defined in: style/figure
+
+% Insert a new figure:
+% \myFigure{filename}{caption}{label}{width}
+% width is ratio of textwidth, so it should be between 0.1 and 1
+
+% Insert a figure wraped in text (left/right)
+% \myWrapFigure{filename}{caption}{label}{width}{l/r}
+% width is ratio of textwidth, so it should be between 0.1 and 1
+% l/r: l = left, r = right
+
+% Insert two figures side by side, with a caption covering both and a subcaption for each figure. OBS: scaled for 50 % text width both
+% Command \mySubFigure{filename1}{filename2}{caption}
+% {subcaption1}{subcaption2}{label}{sublabel1}{sublabel2}
+
+
+
+%%%%% TABLES %%%%%
+% Command \myTable{caption text}{refrence label}{input filename: eq <tables/myTable>}
+% for inserting tables
+
+
+%%%%% CODE LISTING %%%%%
+%\begin{lstlisting}[language=Matlab, caption={Dette er et eksempel på hvordan du skal bruge listing}, label=list_me_like_a_baws]
+%
+%	INSERT CODE HERE
+%
+%\end{lstlisting}
+
+% For more info go to http://ctan.org/pkg/listing
+
+
+
+%%%%% EQUATIONS / MATH %%%%%
+% For info in the user guide at http://ctan.org/pkg/amsmath
+% Feel free to add ninja tricks to this guide
+
+
+
+%%%%% BibTeX %%%%%
+% To cite some article use:
+% \citep{fooArticle} or
+% \citep[see this baws article]{fooArticle}
+
+% OBS: remember to add article to "bibliografi.bib" using syntex of the examples in the file.
+
+
+
+%%%%% Nomenclature %%%%%
+% When introducing a new symbol add it to the nomenclature by:
+% \nomenclature{symbol}{description}
+% remember to put symbol in mathmode if necessary
+% OBS: if you need to add more the one symbol you have to add a "%" at the end of every \nomenclature use except for the last one. See example below:
+%
+%	\begin{equation}
+%		e=m \cdot c^2
+%	\end{equation}%
+%	\nomenclature{$e$}{Energy}%
+%	\nomenclature{$m$}{The mass}%
+%	\nomenclature{$c$}{The speed of light. 299 792 458 $\frac{m}{s}$}
+
+%%%%% COLOR %%%%%
+\definecolor{deadlinecolor}{HTML}{FD6864}
+\definecolor{reviewcolor}{HTML}{9698ED}
+
+%%%%% TEXT COMMANDS %%%%%
+\newcommand{\prbl}{Problematic} % For the lulz
+
+%%%%% MATH COMMANDS %%%%%
+\newcommand{\degree}{^\circ}

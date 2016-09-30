@@ -1,0 +1,82 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                       Custom for figures (myFigure etc.)                     %
+%                     			      	        		                       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include image and graphic
+\usepackage{graphicx}
+
+% Package for wrapping figures in text
+\usepackage{wrapfig}
+
+% Set the path where LaTeX looks for pictures.
+\graphicspath{{figure/}}
+
+% You need a newsubfloat element to use subcaption
+\newsubfloat{figure}
+
+% Command to set caption styles
+\captionsetup[figure]{
+    labelfont=bf
+}
+
+\captionsetup[table]{
+    labelfont=bf
+}
+
+% from the old preamble
+\captionnamefont{\bfseries\small}
+\captiontitlefont{\itshape\small}
+\subcaptionlabelfont{\bfseries\small}
+\subcaptionfont{\itshape\small}
+
+
+% Command \myFigure{filename}{caption}{label}{width} 
+% for inserting a new figure.
+\newcommand{\myFigure}[4]
+{ 
+    \begin{figure}[ht] 
+        \centering 
+        \includegraphics[width=#4\textwidth]{#1} 
+        \caption{#2} 
+        \label{#3} 
+    \end{figure}
+} 
+ 
+% Insert a figure wraped in text (left/right)
+% Command \myWrapFigure{filename}{caption}{label}{width}{r/l}
+\newcommand{\myWrapFigure}[5]
+{ 
+    \begin{wrapfigure}{#5}{#4 \textwidth}
+        \begin{center}
+            \includegraphics[width=#4\textwidth]{#1}
+        \end{center}
+        \caption{#2}
+        \label{#3} 
+    \end{wrapfigure}
+}
+ 
+% Insert two figures side by side, with a caption covering both and a subcaption for each figure. OBS: scaled for 50 % text width both
+% Command \mySubFigure{filename1}{filename2}{caption}
+% {subcaption1}{subcaption2}{label}{sublabel1}{sublabel2}
+\newcommand{\mySubFigure}[9]
+{
+    \begin{figure}[ht]
+        \centering
+        \subbottom[{#4}\label{#7}]%
+            {\includegraphics[width=0.5\textwidth]{#1}}\hfill
+        \subbottom[{#5}\label{#8}]%
+            {\includegraphics[width=0.5\textwidth]{#2}}
+        \caption{#3}
+        \label{#6}
+    \end{figure}
+}
+
+
+% Keeps floats in the section. 
+% Help control place to put pix
+\usepackage[section]{placeins}
+
+
+%Package with enumirate command with extra options (used within cells of tabular)
+\usepackage[inline]{enumitem}

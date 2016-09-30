@@ -1,0 +1,106 @@
+\RequirePackage{etex}
+\RequirePackage{fix-cm} % For custom font shaping
+
+% Document class
+\documentclass[pdftex, 11pt, a4paper, oneside, english]{memoir}
+
+% Page styling
+\let\footruleskip\undefined
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+% English language package
+\usepackage[english]{babel}
+
+% UTF-8 characters
+\usepackage[utf8]{inputenc}
+
+% Package for dummy text
+\usepackage{lipsum}
+
+% Colors for chapters and table of content
+\usepackage[table,xcdraw]{xcolor}
+\definecolor{ThemeColor}{RGB}{0, 154, 242} % Blue
+\definecolor{BlackColor}{RGB}{0, 0, 0} % Black
+
+% Table packages
+% Merge cells i tables
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{tabularx}
+
+% PDF propeties (fx. hyperlinks, pdftitle)
+\usepackage[hyphens]{url}
+\usepackage[bookmarks=true,bookmarksnumbered=true,citecolor=black,colorlinks=true,hyperfigures=true,hyperfootnotes=true,hyperindex=true,linkcolor=black,urlcolor=blue]{hyperref}
+
+% BibTeX = bibliography
+% ALWAYS USE \citep{} or something like:
+% \citep[see this baws article]{fooArticle}
+\usepackage[semicolon,authoryear,round]{natbib}
+\bibliographystyle{plainnat}
+
+% Package for editing captions. Fx for figures and code listings
+\usepackage[textfont={footnotesize,sl}]{caption}
+
+%Package for MATLAB code
+\usepackage[framed, numbered]{mcode}
+
+% Package for more elegant math
+\usepackage{amsmath}
+\usepackage{xfrac} % for \sfrac command
+
+
+% Styles
+\input{style/chapter}
+\input{style/headerFooter}
+\input{style/figure}
+\input{style/todos}
+%\input{style/code}
+\input{style/customCmds}
+\input{style/tables}
+
+
+% Geometry for frontpage
+\usepackage{geometry}
+
+% For traceability matrix
+\usepackage{longtable}
+\usepackage{rotating}
+
+\begin{document}
+
+	\begin{titlingpage}
+		% Frontpage goes here
+		\include{chapter/Frontpage}
+	\end{titlingpage}
+	
+    % Table of contents
+    \tableofcontents*	% The star keeps TOC from indexing itself
+
+	\vspace{2em}
+	
+	%Revision history
+	\subsection*{Revision History}	
+	\renewcommand\arraystretch{1.5}
+	\begin{tabular}{b{1cm} b{1.5cm} b{2cm} b{8.5cm}}
+		\textbf{Ver.} & \textbf{Author} & \textbf{Date} & \textbf{Note} \\
+		\hline
+		0.1 & KSG & 30-09-2016 & Report template created. \\
+		\hline
+	\end{tabular}
+	\renewcommand\arraystretch{1}
+
+    \include{chapter/introduction}
+     \include{chapter/solution}
+     \include{chapter/Discussion}
+     \include{chapter/conclusion}
+	\bibliography{bibliografi}% Selects .bib file AND prints bibliography
+
+
+	\addtocontents{toc}{\protect\setcounter{tocdepth}{1}}
+    
+    % Appendix
+    \input{style/appendix} % Changes chapter and section style and toc adding
+    
+
+\end{document}

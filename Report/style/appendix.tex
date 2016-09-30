@@ -1,0 +1,21 @@
+\appendix
+
+
+% Adding appendix to toc and setting space between "Bilag A" and "chapter name"
+\addtocontents{toc}{\setlength\cftchapternumwidth{1cm}}
+
+% Redifining chapterstyle for appendix(document past this point)
+\chapterstyle{default}
+% Changing vertical position of chapter headline
+\renewcommand*{\chapterheadstart}{\vspace*{-20pt}}
+
+% Section numbers in margin
+%\defaultsecnum
+\hangsecnum
+
+% Color setup for sections
+% Title color
+\renewcommand\thesection{\thechapter.\arabic{section}}
+
+% Set the depth of sections included in table of contents
+\settocdepth{chapter}
