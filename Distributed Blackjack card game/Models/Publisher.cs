@@ -18,13 +18,14 @@ namespace Shared
             remoteEndPoint = new IPEndPoint(Utils.GetLocalIp4Address(), Port);
         }
 
-        public void Publish(string topic, string eventData, Guid? subscriptionId = null)
+        public void Publish(string topic, Event @event, string eventData = "", Guid? subscriptionId = null)
         {
             client.SendTo(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(
                 new Message
                 {
                     Command = Command.Publish,
                     Topic = topic,
+                    Event = @event,
                     EventData = eventData,
                     SubscriptionId = subscriptionId
                 })),

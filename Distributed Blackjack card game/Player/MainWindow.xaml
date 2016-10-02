@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <TextBox x:Name="topic" HorizontalAlignment="Left" Height="23" Margin="184,10,0,0" TextWrapping="Wrap" Text="Test" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="topic" HorizontalAlignment="Left" Height="23" Margin="184,10,0,0" TextWrapping="Wrap" Text="Table 1" VerticalAlignment="Top" Width="120"/>
         <TextBlock HorizontalAlignment="Left" Height="23" Margin="148,11,0,0" TextWrapping="Wrap" Text="Topic" VerticalAlignment="Top" Width="31"/>
 
         <TextBlock x:Name="message" HorizontalAlignment="Left" Margin="144,80,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>

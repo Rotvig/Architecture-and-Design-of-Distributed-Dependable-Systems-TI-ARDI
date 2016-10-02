@@ -77,19 +77,19 @@ namespace Shared
             while (true)
             {
                 recv = client.ReceiveFrom(data, ref publisherEndPoint);
-                var msg = Encoding.ASCII.GetString(data, 0, recv) + "," + publisherEndPoint;
+                var msg = Encoding.ASCII.GetString(data, 0, recv);
                 if (!string.IsNullOrEmpty(msg))
                 {
-                    NewMessage?.Invoke(this, new NewMessageEvent(msg));
+                    NewMessage?.Invoke(this, new NewMessageEvent(JsonConvert.DeserializeObject<Message>(msg)));
                 }
             }
         }
 
         public class NewMessageEvent : EventArgs
         {
-            public string Message { get; set; }
+            public Message Message { get; set; }
 
-            public NewMessageEvent(string message)
+            public NewMessageEvent(Message message)
             {
                 Message = message;
             }

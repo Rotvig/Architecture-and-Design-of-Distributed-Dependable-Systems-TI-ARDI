@@ -39,18 +39,19 @@ namespace PubSubServer
                     var recv = 0;
                     var data = new byte[1024];
                     recv = server.ReceiveFrom(data, ref remoteEp);
-                    var message = JsonConvert.DeserializeObject<Message>(Encoding.ASCII.GetString(data, 0, recv));
+                    var serializedMessage = Encoding.ASCII.GetString(data, 0, recv);
+                    var deserializedMessage = JsonConvert.DeserializeObject<Message>(serializedMessage);
 
-                    if (message.Command != Command.Publish) continue;
-                    if (string.IsNullOrEmpty(message.Topic)) continue;
+                    if (deserializedMessage.Command != Command.Publish) continue;
+                    if (string.IsNullOrEmpty(deserializedMessage.Topic)) continue;
 
-                    var subscriberListForThisTopic = Filter.GetSubscribers(message.Topic);
+                    var subscriberListForThisTopic = Filter.GetSubscribers(deserializedMessage.Topic);
                     var workerThreadParameters = new WorkerThreadParameters
                     {
                         Server = server,
-                        EventData = message.EventData,
+                        SerializedMessage = serializedMessage,
                         SubscriberListForThisTopic = subscriberListForThisTopic,
-                        SubscriptionId = message.SubscriptionId
+                        DeserializedMessage = deserializedMessage
                     };
 
                     ThreadPool.QueueUserWorkItem(Publish, workerThreadParameters);
@@ -66,23 +67,22 @@ namespace PubSubServer
         {
             var workerThreadParameters = (WorkerThreadParameters) stateInfo;
             var server = workerThreadParameters.Server;
-            var message = workerThreadParameters.EventData;
+            var message = workerThreadParameters.DeserializedMessage.EventData;
             var subscriberListForThisTopic = workerThreadParameters.SubscriberListForThisTopic;
-            var messagelength = message.Length;
+            var messagelength = workerThreadParameters.SerializedMessage.Length;
 
             if (subscriberListForThisTopic == null) return;
 
-            if (workerThreadParameters.SubscriptionId != null)
+            if (workerThreadParameters.DeserializedMessage.SubscriptionId != null)
             {
-                var subscriber = subscriberListForThisTopic.Single(x => x.SubscriptionId == workerThreadParameters.SubscriptionId);
-                server.SendTo(Encoding.ASCII.GetBytes(message + "," + subscriber.SubscriptionId), messagelength, SocketFlags.None, subscriber.Endpoint);
+                var subscriber = subscriberListForThisTopic.Single(x => x.SubscriptionId == workerThreadParameters.DeserializedMessage.SubscriptionId);
+                server.SendTo(Encoding.ASCII.GetBytes(workerThreadParameters.SerializedMessage), messagelength, SocketFlags.None, subscriber.Endpoint);
                 return;
             }
 
             foreach (var subscriber in subscriberListForThisTopic)
             {
-
-                server.SendTo(Encoding.ASCII.GetBytes(message + "," + subscriber.SubscriptionId), messagelength, SocketFlags.None, subscriber.Endpoint);
+                server.SendTo(Encoding.ASCII.GetBytes(workerThreadParameters.SerializedMessage), messagelength, SocketFlags.None, subscriber.Endpoint);
             }
         }
     }
@@ -91,10 +91,10 @@ namespace PubSubServer
     {
         public Socket Server { get; set; }
 
-        public string EventData { get; set; }
+        public string SerializedMessage { get; set; }
+        public Message DeserializedMessage { get; set; }
+
 
         public List<SubscriberTuple> SubscriberListForThisTopic { get; set; }
-
-        public Guid? SubscriptionId;
     }
 }

@@ -13,15 +13,29 @@ namespace Player
         {
             InitializeComponent();
 
-
             subscriber = new Subscriber();
+            subscriber.NewMessage += (sender, @event) => Dispatcher.Invoke(() => NewMessage(@event.Message));
+        }
 
-            subscriber.NewMessage += (sender, @event) => Dispatcher.Invoke(() => message.Text = @event.Message);
+        private void NewMessage(Message message)
+        {
+            switch (message.Event)
+            {
+                case Event.GameStart:
+                    break;
+                case Event.Bet:
+                    break;
+                case Event.Hit:
+                    break;
+                case Event.Stand:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private void btn_sub_Click(object sender, RoutedEventArgs e)
         {
-            var subscriptionId = Guid.NewGuid();
             subscriber.Subscribe(topic.Text.Trim());
 
             ((Button) sender).Visibility = Visibility.Collapsed;
