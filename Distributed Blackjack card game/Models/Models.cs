@@ -6,11 +6,8 @@ namespace Shared
 {
     public class SubscriberTuple : Tuple<EndPoint, Guid>
     {
-        public SubscriberTuple(EndPoint endpoint, Guid subscriptionId)
-            : base(endpoint, subscriptionId)
-        {
-
-        }
+        public SubscriberTuple(EndPoint endpoint, Guid subscriptionId): base(endpoint, subscriptionId)
+        {}
 
         public EndPoint Endpoint => Item1;
         public Guid SubscriptionId => Item2;
@@ -23,6 +20,7 @@ namespace Shared
         public string Topic { get; set; }
         public Event Event { get; set; }
         public string EventData { get; set; }
+        public bool PublishToSubscriptionId { get; set; }
     }
 
     public enum Command

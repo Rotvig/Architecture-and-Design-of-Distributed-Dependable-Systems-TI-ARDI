@@ -7,8 +7,9 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <TextBox x:Name="topic" HorizontalAlignment="Left" Height="23" Margin="184,10,0,0" TextWrapping="Wrap" Text="Table 1" VerticalAlignment="Top" Width="120"/>
-        <TextBlock HorizontalAlignment="Left" Height="23" Margin="148,11,0,0" TextWrapping="Wrap" Text="Topic" VerticalAlignment="Top" Width="31"/>
+        <TextBlock Name="Block1" HorizontalAlignment="Left" Height="23" Margin="148,11,0,0" TextWrapping="Wrap" Text="Topic: Table 1" VerticalAlignment="Top" Width="78"/>
+        <TextBlock Name="Block2" HorizontalAlignment="Left" Height="23" Margin="231,11,0,0" TextWrapping="Wrap" Text="Sub Topic: Sub Table 1" VerticalAlignment="Top" Width="118"/>
+
         <Button x:Name="button" Content="Start Game" HorizontalAlignment="Left" Margin="215,51,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
 
     </Grid>

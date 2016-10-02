@@ -8,6 +8,8 @@ namespace Player
     public partial class MainWindow : Window
     {
         private readonly Subscriber subscriber;
+        private readonly Publisher publisher;
+
 
         public MainWindow()
         {
@@ -15,6 +17,7 @@ namespace Player
 
             subscriber = new Subscriber();
             subscriber.NewMessage += (sender, @event) => Dispatcher.Invoke(() => NewMessage(@event.Message));
+            publisher = new Publisher();
         }
 
         private void NewMessage(Message message)
@@ -22,6 +25,7 @@ namespace Player
             switch (message.Event)
             {
                 case Event.GameStart:
+                    publisher.Publish("Sub " + topic.Text.Trim(), Event.Bet, "", subscriber.SubscriptionId);
                     break;
                 case Event.Bet:
                     break;

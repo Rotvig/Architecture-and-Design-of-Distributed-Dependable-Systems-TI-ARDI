@@ -67,34 +67,34 @@ namespace PubSubServer
         {
             var workerThreadParameters = (WorkerThreadParameters) stateInfo;
             var server = workerThreadParameters.Server;
-            var message = workerThreadParameters.DeserializedMessage.EventData;
             var subscriberListForThisTopic = workerThreadParameters.SubscriberListForThisTopic;
-            var messagelength = workerThreadParameters.SerializedMessage.Length;
 
             if (subscriberListForThisTopic == null) return;
 
-            if (workerThreadParameters.DeserializedMessage.SubscriptionId != null)
+            if (workerThreadParameters.DeserializedMessage.SubscriptionId != null && workerThreadParameters.DeserializedMessage.PublishToSubscriptionId)
             {
                 var subscriber = subscriberListForThisTopic.Single(x => x.SubscriptionId == workerThreadParameters.DeserializedMessage.SubscriptionId);
-                server.SendTo(Encoding.ASCII.GetBytes(workerThreadParameters.SerializedMessage), messagelength, SocketFlags.None, subscriber.Endpoint);
+                PublishMessage(server, workerThreadParameters.SerializedMessage, subscriber);
                 return;
             }
 
             foreach (var subscriber in subscriberListForThisTopic)
             {
-                server.SendTo(Encoding.ASCII.GetBytes(workerThreadParameters.SerializedMessage), messagelength, SocketFlags.None, subscriber.Endpoint);
+                PublishMessage(server, workerThreadParameters.SerializedMessage, subscriber);
             }
+        }
+
+        private static void PublishMessage(Socket server, string serializedMessage, SubscriberTuple subscriber)
+        {
+            server.SendTo(Encoding.ASCII.GetBytes(serializedMessage), serializedMessage.Length, SocketFlags.None, subscriber.Endpoint);
         }
     }
 
     internal class WorkerThreadParameters
     {
         public Socket Server { get; set; }
-
         public string SerializedMessage { get; set; }
         public Message DeserializedMessage { get; set; }
-
-
         public List<SubscriberTuple> SubscriberListForThisTopic { get; set; }
     }
 }

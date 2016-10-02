@@ -10,7 +10,6 @@ namespace Shared
     public class Subscriber
     {
         public event EventHandler<NewMessageEvent> NewMessage;
-        public Guid? SubscriptionId;
         private readonly Socket client;
         private readonly EndPoint remoteEndPoint;
         private byte[] data;
@@ -18,13 +17,14 @@ namespace Shared
         private bool isReceivingStarted;
         private const int Port = 10001;
         private string currentTopic;
-        
 
         public Subscriber()
         {
             client = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             remoteEndPoint = new IPEndPoint(Utils.GetLocalIp4Address(), Port);
         }
+
+        public Guid? SubscriptionId { get; private set; }
 
         public void Subscribe(string topic)
         {
