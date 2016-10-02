@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using Models;
+using Shared;
 
 namespace PubSubServer
 {

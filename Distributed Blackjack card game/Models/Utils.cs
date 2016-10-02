@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace Models
+namespace Shared
 {
     public class Utils
     {

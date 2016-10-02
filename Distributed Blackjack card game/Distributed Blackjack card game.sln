@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{844DB0D5-7362-4D9C-B4A0-6A05C3307177}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Models\Shared.csproj", "{844DB0D5-7362-4D9C-B4A0-6A05C3307177}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PubSubServer", "PubSubServer\PubSubServer.csproj", "{F8C5C251-2963-4761-9E04-773CFD2DB2B9}"
 EndProject
