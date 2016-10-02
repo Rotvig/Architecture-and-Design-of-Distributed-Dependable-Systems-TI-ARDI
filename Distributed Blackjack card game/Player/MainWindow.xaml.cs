@@ -33,6 +33,8 @@ namespace Player
                     break;
                 case Event.Stand:
                     break;
+                case Event.HandoutCards:
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

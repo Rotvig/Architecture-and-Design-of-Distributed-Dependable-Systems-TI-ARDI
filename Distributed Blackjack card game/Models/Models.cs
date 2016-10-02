@@ -19,7 +19,7 @@ namespace Shared
         public Guid? SubscriptionId { get; set; }
         public string Topic { get; set; }
         public Event Event { get; set; }
-        public string EventData { get; set; }
+        public object EventData { get; set; }
         public bool PublishToSubscriptionId { get; set; }
     }
 
@@ -33,9 +33,16 @@ namespace Shared
     public enum Event
     {
         GameStart,
+        HandoutCards,
         Bet,
         Hit,
         Stand
+    }
+
+    public class Player
+    {
+        public Guid SubscriptionId { get; set; }
+        public int Bet { get; set; }
     }
 
     public class Card

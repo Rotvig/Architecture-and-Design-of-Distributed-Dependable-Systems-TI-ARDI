@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using Shared;
 
@@ -9,7 +11,9 @@ namespace Dealer
     {
         private readonly Publisher publisher;
         private readonly Subscriber subscriber;
-        private List<Card> currentDeck;
+        private Queue<Card> currentDeck;
+        private readonly List<Player> players = new List<Player>();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -30,6 +34,7 @@ namespace Dealer
                 case Event.GameStart:
                     break;
                 case Event.Bet:
+                    AddPlayer(message);
                     break;
                 case Event.Hit:
                     break;
@@ -40,11 +45,38 @@ namespace Dealer
             }
         }
 
+        private void AddPlayer(Message message)
+        {
+            players.Add(new Player
+            {
+                SubscriptionId = message.SubscriptionId.Value,
+                Bet = 0 //Todo fix this
+            });
+        }
+
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            currentDeck = DeckFactory.CreateDeck();
-            currentDeck.Shuffle();
+            currentDeck = DeckFactory.CreateDeck().Shuffle();
+
             publisher.Publish(Utils.TablePublishTopic, Event.GameStart);
+            Task.Factory.StartNew(() =>
+            {
+                Thread.Sleep(20000);
+                HandoutCards();
+            });
+        }
+
+        private void HandoutCards()
+        {
+            foreach (var player in players)
+            {
+                publisher.Publish(
+                    Utils.TablePublishTopic,
+                    Event.HandoutCards,
+                    new List<Card> {currentDeck.Dequeue(), currentDeck.Dequeue()},
+                    player.SubscriptionId,
+                    true);
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Shared
             remoteEndPoint = new IPEndPoint(Utils.GetLocalIp4Address(), Port);
         }
 
-        public void Publish(string topic, Event @event, string eventData = "", Guid? subscriptionId = null, bool publishToSubscriptionId = false)
+        public void Publish(string topic, Event @event, object eventData = null, Guid? subscriptionId = null, bool publishToSubscriptionId = false)
         {
             client.SendTo(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(
                 new Message

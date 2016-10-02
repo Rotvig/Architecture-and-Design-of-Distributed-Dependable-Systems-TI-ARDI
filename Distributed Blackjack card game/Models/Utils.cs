@@ -22,11 +22,11 @@ namespace Shared
         private static readonly Random Rng = new Random();
 
         /// <summary>
-        ///  Fisher-Yates shuffle
+        ///  Fisher-Yates shuffles and returns a Queue
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
-        public static void Shuffle<T>(this IList<T> list)
+        public static Queue<T> Shuffle<T>(this IList<T> list)
         {
             var n = list.Count;
             while (n > 1)
@@ -37,6 +37,13 @@ namespace Shared
                 list[k] = list[n];
                 list[n] = value;
             }
+
+            var queue = new Queue<T>();
+            foreach (var item in list)
+            {
+                queue.Enqueue(item);
+            }
+            return queue;
         }
     }
 }
