@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using Newtonsoft.Json;
 using Shared;
 
 namespace PubSubServer
@@ -16,11 +17,10 @@ namespace PubSubServer
             th.Start();
         }
 
-        private void HostSubscriberService()
+        private static void HostSubscriberService()
         {
-            var localEP = new IPEndPoint(Utils.GetLocalIp4Address(), Port);
             var server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            server.Bind(localEP);
+            server.Bind(new IPEndPoint(Utils.GetLocalIp4Address(), Port));
 
 
             StartListening(server);
@@ -28,38 +28,22 @@ namespace PubSubServer
 
         private static void StartListening(Socket server)
         {
-            EndPoint remoteEP = new IPEndPoint(IPAddress.Any, 0);
-            var recv = 0;
-            var data = new byte[1024];
+            EndPoint remoteEp = new IPEndPoint(IPAddress.Any, 0);
             while (true)
             {
-                recv = 0;
-                data = new byte[1024];
-                recv = server.ReceiveFrom(data, ref remoteEP);
-                var messageSendFromClient = Encoding.ASCII.GetString(data, 0, recv);
-                var messageParts = messageSendFromClient.Split(",".ToCharArray());
+                var recv = 0;
+                var data = new byte[1024];
+                recv = server.ReceiveFrom(data, ref remoteEp);
+                var message = JsonConvert.DeserializeObject<Message>(Encoding.ASCII.GetString(data, 0, recv));
 
-                if (!string.IsNullOrEmpty(messageParts[0]))
+                switch (message.Command)
                 {
-                    switch (messageParts[0])
-                    {
-                        case "Subscribe":
-
-                            if (!string.IsNullOrEmpty(messageParts[1]))
-                            {
-                                Filter.AddSubscriber(messageParts[1], remoteEP);
-                            }
-
-
-                            break;
-                        case "UnSubscribe":
-
-                            if (!string.IsNullOrEmpty(messageParts[1]))
-                            {
-                                Filter.RemoveSubscriber(messageParts[1], remoteEP);
-                            }
-                            break;
-                    }
+                    case Command.Subscribe:
+                        Filter.AddSubscriber(message.Topic, message.SubscriptionId.Value, remoteEp);
+                        break;
+                    case Command.Unsubscribe:
+                        Filter.RemoveSubscriber(message.Topic, message.SubscriptionId.Value, remoteEp);
+                        break;
                 }
             }
         }

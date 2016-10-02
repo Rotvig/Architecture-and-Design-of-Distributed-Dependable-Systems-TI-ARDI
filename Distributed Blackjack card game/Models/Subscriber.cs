@@ -3,12 +3,14 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace Shared
 {
     public class Subscriber
     {
         public event EventHandler<NewMessageEvent> NewMessage;
+        public Guid? SubscriptionId;
         private readonly Socket client;
         private readonly EndPoint remoteEndPoint;
         private byte[] data;
@@ -16,6 +18,7 @@ namespace Shared
         private bool isReceivingStarted;
         private const int Port = 10001;
         private string currentTopic;
+        
 
         public Subscriber()
         {
@@ -26,15 +29,20 @@ namespace Shared
         public void Subscribe(string topic)
         {
             currentTopic = topic;
+            SubscriptionId = Guid.NewGuid();
 
             if (string.IsNullOrEmpty(currentTopic))
             {
                 throw new ArgumentException("Please Enter a Topic Name");
             }
 
-            var Command = "Subscribe";
+            var message = JsonConvert.SerializeObject(new Message
+            {
+                Command = Command.Subscribe,
+                SubscriptionId = SubscriptionId,
+                Topic = currentTopic
+            });
 
-            var message = Command + "," + currentTopic;
             client.SendTo(Encoding.ASCII.GetBytes(message), remoteEndPoint);
 
             if (isReceivingStarted) return;
@@ -51,10 +59,16 @@ namespace Shared
             {
                 throw new ArgumentException("Please Enter a Topic Name");
             }
-            var command = "UnSubscribe";
 
-            var message = command + "," + currentTopic;
+            var message = JsonConvert.SerializeObject(new Message
+            {
+                Command = Command.Unsubscribe,
+                SubscriptionId = SubscriptionId,
+                Topic = currentTopic
+            });
+
             client.SendTo(Encoding.ASCII.GetBytes(message), remoteEndPoint);
+            SubscriptionId = null;
         }
 
         private void ReceiveDataFromServer()

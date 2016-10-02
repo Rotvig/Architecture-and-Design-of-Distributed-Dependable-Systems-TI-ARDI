@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using Newtonsoft.Json;
 using Shared;
 
 namespace PubSubServer
@@ -28,39 +31,29 @@ namespace PubSubServer
 
         private static void StartListening(Socket server)
         {
-            EndPoint remoteEP = new IPEndPoint(IPAddress.Any, 0);
-            var recv = 0;
-            var data = new byte[1024];
+            EndPoint remoteEp = new IPEndPoint(IPAddress.Any, 0);
             while (true)
             {
                 try
                 {
-                    recv = 0;
-                    data = new byte[1024];
-                    recv = server.ReceiveFrom(data, ref remoteEP);
-                    var messageSendFromClient = Encoding.ASCII.GetString(data, 0, recv);
-                    var messageParts = messageSendFromClient.Split(",".ToCharArray());
-                    var command = messageParts[0];
-                    var topicName = messageParts[1];
-                    if (!string.IsNullOrEmpty(command))
-                    {
-                        if (messageParts[0] == "Publish")
-                        {
-                            if (!string.IsNullOrEmpty(topicName))
-                            {
-                                var eventParts = new List<string>(messageParts);
-                                eventParts.RemoveRange(0, 1);
-                                var message = MakeCommaSeparatedString(eventParts);
-                                List<EndPoint> subscriberListForThisTopic = Filter.GetSubscribers(topicName);
-                                var workerThreadParameters = new WorkerThreadParameters();
-                                workerThreadParameters.Server = server;
-                                workerThreadParameters.Message = message;
-                                workerThreadParameters.SubscriberListForThisTopic = subscriberListForThisTopic;
+                    var recv = 0;
+                    var data = new byte[1024];
+                    recv = server.ReceiveFrom(data, ref remoteEp);
+                    var message = JsonConvert.DeserializeObject<Message>(Encoding.ASCII.GetString(data, 0, recv));
 
-                                ThreadPool.QueueUserWorkItem(Publish, workerThreadParameters);
-                            }
-                        }
-                    }
+                    if (message.Command != Command.Publish) continue;
+                    if (string.IsNullOrEmpty(message.Topic)) continue;
+
+                    var subscriberListForThisTopic = Filter.GetSubscribers(message.Topic);
+                    var workerThreadParameters = new WorkerThreadParameters
+                    {
+                        Server = server,
+                        EventData = message.EventData,
+                        SubscriberListForThisTopic = subscriberListForThisTopic,
+                        SubscriptionId = message.SubscriptionId
+                    };
+
+                    ThreadPool.QueueUserWorkItem(Publish, workerThreadParameters);
                 }
                 catch
                 {
@@ -73,31 +66,24 @@ namespace PubSubServer
         {
             var workerThreadParameters = (WorkerThreadParameters) stateInfo;
             var server = workerThreadParameters.Server;
-            var message = workerThreadParameters.Message;
+            var message = workerThreadParameters.EventData;
             var subscriberListForThisTopic = workerThreadParameters.SubscriberListForThisTopic;
             var messagelength = message.Length;
 
-            if (subscriberListForThisTopic != null)
-            {
-                foreach (var endPoint in subscriberListForThisTopic)
-                {
-                    server.SendTo(Encoding.ASCII.GetBytes(message), messagelength, SocketFlags.None, endPoint);
-                }
-            }
-        }
+            if (subscriberListForThisTopic == null) return;
 
-        private static string MakeCommaSeparatedString(List<string> eventParts)
-        {
-            var message = string.Empty;
-            foreach (var item in eventParts)
+            if (workerThreadParameters.SubscriptionId != null)
             {
-                message = message + item + ",";
+                var subscriber = subscriberListForThisTopic.Single(x => x.SubscriptionId == workerThreadParameters.SubscriptionId);
+                server.SendTo(Encoding.ASCII.GetBytes(message + "," + subscriber.SubscriptionId), messagelength, SocketFlags.None, subscriber.Endpoint);
+                return;
             }
-            if (message.Length != 0)
+
+            foreach (var subscriber in subscriberListForThisTopic)
             {
-                message = message.Remove(message.Length - 1, 1);
+
+                server.SendTo(Encoding.ASCII.GetBytes(message + "," + subscriber.SubscriptionId), messagelength, SocketFlags.None, subscriber.Endpoint);
             }
-            return message;
         }
     }
 
@@ -105,8 +91,10 @@ namespace PubSubServer
     {
         public Socket Server { get; set; }
 
-        public string Message { get; set; }
+        public string EventData { get; set; }
 
-        public List<EndPoint> SubscriberListForThisTopic { get; set; }
+        public List<SubscriberTuple> SubscriberListForThisTopic { get; set; }
+
+        public Guid? SubscriptionId;
     }
 }

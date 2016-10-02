@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using Shared;
 
@@ -20,6 +21,7 @@ namespace Player
 
         private void btn_sub_Click(object sender, RoutedEventArgs e)
         {
+            var subscriptionId = Guid.NewGuid();
             subscriber.Subscribe(topic.Text.Trim());
 
             ((Button) sender).Visibility = Visibility.Collapsed;

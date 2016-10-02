@@ -1,6 +1,8 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Shared
 {
@@ -16,9 +18,17 @@ namespace Shared
             remoteEndPoint = new IPEndPoint(Utils.GetLocalIp4Address(), Port);
         }
 
-        public void Publish(string topic, string eventData)
+        public void Publish(string topic, string eventData, Guid? subscriptionId = null)
         {
-            client.SendTo(Encoding.ASCII.GetBytes("Publish" + "," + topic + "," + eventData), remoteEndPoint);
+            client.SendTo(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(
+                new Message
+                {
+                    Command = Command.Publish,
+                    Topic = topic,
+                    EventData = eventData,
+                    SubscriptionId = subscriptionId
+                })),
+                remoteEndPoint);
         }
     }
 }
