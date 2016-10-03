@@ -42,13 +42,23 @@ namespace Shared
         HandoutCards,
         Bet,
         Hit,
-        Stand
+        Stand,
+        Bust
     }
 
     public class Player
     {
         public Guid SubscriptionId { get; set; }
         public int Bet { get; set; }
+        public Status Status { get; set; }
+
+    }
+
+    public enum Status
+    {
+        Playing,
+        Stands,
+        Bust
     }
 
     public class Card
