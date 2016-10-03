@@ -4,3 +4,18 @@
 \section{Intro to requirements for the exercise project}
 
 \section{Patterns used in the solution}
+\todo{Overskrift skal evt. bare være "Publicher/subscriber pattern}
+The publisher/subscriber pattern has been chosen for this project. The pattern is a widely used message passing pattern, for communication in a distributed system. The pattern is used to decouple the application, such that the threads\todo{skal der skrives threads her?} does not know about each other, they also do not have to be online at the same time to pass message to each other. When developing a system with message passing, decoupling is achieved by three mechanisms, these mechanisms are \emph{space decoupling}, \emph{Time decoupling} and \emph{flow decoupling}. The publish/subscriber pattern comply all of the mechanisms. They will all be described in the sections below.
+
+\subsection{Space decoupling}
+Space decoupling is that the publisher and the subscriber may not know about each other. When the publisher have a new message that it want to publish to it's subscribers, it will publish it to an event service. More publishers can publish their content to this service. A subscriber who wants to subscribe on some specific content, will tell the event service that it is interested in some specific messages. When doing so, it does not matter who the publisher is, it only matters which kind of content it is subscribing to. The event service will make sure that the subscriber receives the content that it has subscribed to. In figure \ref{fig:space} the principle is shown
+
+\myFigure{space}{Space decoupling}{fig:space}{0.8}
+
+\subsection{Time decoupling}
+Time decoupling is another mechanism to decouple the publisher from the subscriber. As shown in the upper part of figure \ref{fig:time} the publisher can publish content to the event service while the subscriber is disconnected. In the lower part of figure \ref{fig:time}, the subscriber later on receives the content it has subscribed for, even though the publisher i disconnected at this very moment.
+\myFigure{time}{Time decoupling}{fig:time}{0.8}
+
+\subsection{Flow decoupling}
+The last mechanism that the publisher/subscriber pattern holds is the decoupling in flow. The publisher will not get blocked when producing events. The flow on the subscriber will not be interrupted, as it can be notified about an incoming event while it concurrently is processing another activity.
+\myFigure{flow}{Flow decoupling}{fig:flow}{0.8}
