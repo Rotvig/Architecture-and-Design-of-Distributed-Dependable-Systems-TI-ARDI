@@ -80,6 +80,16 @@ namespace Player
             );
         }
 
+        private void btn_hit_Click(object sender, RoutedEventArgs e)
+        {
+            publisher.Publish("Sub " + topic.Text.Trim(), Event.Hit, null, subscriber.SubscriptionId);
+        }
+
+        private void btn_stand_Click(object sender, RoutedEventArgs e)
+        {
+            publisher.Publish("Sub " + topic.Text.Trim(), Event.Stand, null, subscriber.SubscriptionId);
+        }
+
         void timer_Tick(object sender, EventArgs e)
         {
             lblTime.Text = time.ToString();
