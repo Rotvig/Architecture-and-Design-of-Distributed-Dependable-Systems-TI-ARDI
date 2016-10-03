@@ -13,7 +13,7 @@ namespace Dealer
         private readonly Publisher publisher;
         private readonly Subscriber subscriber;
         private Queue<Card> currentDeck;
-        private readonly List<Player> players = new List<Player>();
+        private List<Player> players;
         private Queue<Card> currentDealerCards;
 
         public MainWindow()
@@ -42,17 +42,34 @@ namespace Dealer
                 case Event.Stand:
                     PlayerStands(message);
                     break;
+                case Event.Bust:
+                    PlayerBust(message);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
+        private void PlayerBust(Message message)
+        {
+            players.Single(x => x.SubscriptionId == message.SubscriptionId.Value).Status = Status.Bust;
+            TryFinishGame();
+        }
+
         private void PlayerStands(Message message)
         {
             players.Single(x => x.SubscriptionId == message.SubscriptionId.Value).Status = Status.Stands;
+            TryFinishGame();
+        }
+
+        private void TryFinishGame()
+        {
             if (players.Any(player => player.Status != Status.Playing))
             {
+                //Dealer should play his hand now
                 //LET ALL PLAYERS KNOW IF THEY WIN OR NOT
+                //Game Over
+                button.IsEnabled = true;
             }
         }
 
@@ -62,12 +79,12 @@ namespace Dealer
                 Utils.TablePublishTopic,
                 Event.Hit,
                 new EventData
-                    {
-                        Cards = new List<Card> { currentDeck.Dequeue() }
-                    },
+                {
+                    Cards = new List<Card> {currentDeck.Dequeue()}
+                },
                 message.SubscriptionId,
                 true
-             );
+                );
         }
 
         private void AddPlayer(Message message)
@@ -81,35 +98,45 @@ namespace Dealer
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
+            players = new List<Player>();
+            currentDealerCards = new Queue<Card>();
             currentDeck = DeckFactory.CreateDeck().Shuffle();
             button.IsEnabled = false;
+
             publisher.Publish(Utils.TablePublishTopic, Event.GameStart);
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(5000);
+                Thread.Sleep(20000);
                 HandoutCards();
             });
         }
 
         private void HandoutCards()
         {
+            //Dealer picks two cards for himself
+            currentDealerCards.Enqueue(currentDeck.Dequeue());
+            var card = currentDeck.Dequeue();
+            card.Facedown = true;
+            currentDealerCards.Enqueue(card);
+
             foreach (var player in players)
             {
+                //Pick cards for the player and give one facedown
+                var cards = new List<Card> {currentDeck.Dequeue(), currentDeck.Dequeue()};
+                cards.Last().Facedown = true;
+
                 publisher.Publish(
                     Utils.TablePublishTopic,
                     Event.HandoutCards,
-                    new EventData()
+                    new EventData
                     {
-                        Cards = new List<Card> { currentDeck.Dequeue(), currentDeck.Dequeue() }
+                        Cards = cards
                     },
                     player.SubscriptionId,
                     true);
             }
 
-            //Dealer picks two cards for himself
-            currentDealerCards = new Queue<Card>();
-            currentDealerCards.Enqueue(currentDeck.Dequeue());
-            currentDealerCards.Enqueue(currentDeck.Dequeue());
+
         }
     }
 }

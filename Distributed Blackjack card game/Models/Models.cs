@@ -26,6 +26,7 @@ namespace Shared
     public class EventData
     {
         public List<Card> Cards { get; set; }
+        public List<Card> DealerCards { get; set; }
         public int Bet { get; set; }
     }
 
@@ -73,6 +74,7 @@ namespace Shared
         public string CardName { get; }
         public int Value { get; }
         public int SecondaryValue { get; }
+        public bool Facedown { get; set; }
     }
 
     public static class DeckFactory
