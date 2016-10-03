@@ -19,6 +19,11 @@
         <TextBlock HorizontalAlignment="Left" Height="23" Margin="148,110,0,0" TextWrapping="Wrap" Text="Cards:" VerticalAlignment="Top" Width="31"/>
         <TextBlock Name="card1" HorizontalAlignment="Left" Height="23" Margin="184,138,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="171"/>
         <TextBlock Name="card2" HorizontalAlignment="Left" Height="23" Margin="184,161,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="171"/>
+        <TextBlock Name="card1Value" HorizontalAlignment="Left" Height="23" Margin="377,138,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="50"/>
+        <TextBlock Name="card2Value" HorizontalAlignment="Left" Height="23" Margin="377,161,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="50"/>
+        <Button x:Name="btn_hit" Content="Hit me!" Click="btn_hit_Click" Margin="119,267,310,21" />
+        <Button x:Name="btn_stand" Content="Stand" Click="btn_stand_Click" Margin="324,267,105,21" />
+
 
     </Grid>
 </Window>

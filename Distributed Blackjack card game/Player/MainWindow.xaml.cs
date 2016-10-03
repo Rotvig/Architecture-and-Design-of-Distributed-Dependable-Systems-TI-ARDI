@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Threading;
 using Shared;
 
@@ -14,7 +15,7 @@ namespace Player
         private readonly Publisher publisher;
         private readonly DispatcherTimer timer;
         private TimeSpan time;
-        private List<Card> cards; 
+        private List<Card> cards;
 
         public MainWindow()
         {
@@ -23,7 +24,7 @@ namespace Player
             subscriber = new Subscriber();
             subscriber.NewMessage += (sender, @event) => Dispatcher.Invoke(() => NewMessage(@event.Message));
             publisher = new Publisher();
-            timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
+            timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             timer.Tick += timer_Tick;
         }
 
@@ -43,12 +44,37 @@ namespace Player
                 case Event.Stand:
                     break;
                 case Event.HandoutCards:
-                    cards =  message.EventData.Cards;
-                    card1.Text = cards.First().CardName;
-                    card2.Text = cards.Last().CardName;
+                    CardsHandout(message);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void CardsHandout(Message message)
+        {
+            cards = message.EventData.Cards;
+            card1.Text = cards.First().CardName;
+            card2.Text = cards.Last().CardName;
+            card1Value.Text = cards.First().Value.ToString();
+            card2Value.Text = cards.Last().Value.ToString();
+            if (cards.First().SecondaryValue != 0 || cards.Last().SecondaryValue != 0)
+            {
+                // MessageBox.Show("You have picked an ace", "Should i count for 1 or 11?",)
+
+                MessageBoxManager.Yes = "11";
+                MessageBoxManager.No = "1";
+                MessageBoxManager.Register();
+
+                //DialogResult dialogResult = MessageBox.Show("An important decision!", "You have picked an ace. Which value should count as?", MessageBoxButton.YesNo);
+                //if (dialogResult == DialogResult.Yes)
+                //{
+                //    //do something
+                //}
+                //else if (dialogResult == DialogResult.No)
+                //{
+                //    //do something else
+                //}
             }
         }
 
@@ -56,14 +82,14 @@ namespace Player
         {
             subscriber.Subscribe(topic.Text.Trim());
 
-            ((Button) sender).Visibility = Visibility.Collapsed;
+            ((Button)sender).Visibility = Visibility.Collapsed;
             btn_unsub.Visibility = Visibility.Visible;
         }
 
         private void btn_unsub_Click(object sender, RoutedEventArgs e)
         {
             subscriber.Unsubscribe();
-            ((Button) sender).Visibility = Visibility.Collapsed;
+            ((Button)sender).Visibility = Visibility.Collapsed;
             btn_sub.Visibility = Visibility.Visible;
         }
 
@@ -71,11 +97,11 @@ namespace Player
         {
             timer.Stop();
             lblTime.Text = "";
-            publisher.Publish("Sub " + topic.Text.Trim(), Event.Bet, 
+            publisher.Publish("Sub " + topic.Text.Trim(), Event.Bet,
                 new EventData
-            {
-                Bet = int.Parse(BetTextBox.Text)
-            }, 
+                {
+                    Bet = int.Parse(BetTextBox.Text)
+                },
             subscriber.SubscriptionId
             );
         }
