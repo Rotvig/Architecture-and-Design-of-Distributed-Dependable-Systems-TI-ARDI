@@ -215,3 +215,30 @@ FakesAssemblies/
 **/*.Server/GeneratedArtifacts
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
+
+# OSX
+.DS_Store
+
+
+# git
+.gitignore
+
+
+# vim
+*.swp
+*.un~
+
+
+# LaTeX
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.tdo
+*.nlo
+*.bcf
+*.xml
