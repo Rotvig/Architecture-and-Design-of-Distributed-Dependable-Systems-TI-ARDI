@@ -7,9 +7,8 @@ The goal for this project is to develop a distributed Blackjack card game. For t
 
 Players will be implemented as clients that will connect to a server, which is the dealer, via a network socket. The players will then interact with the dealer as if playing a real Blackjack game. The rules for the Blackjack game will be implemented, but only to the extent that it makes sense for the project. I.e. splitting cards, doubling down and insurance will not be implemented, as it is not strictly necessary mechanisms for being able to play the game. 
 
-The description for this project gives some requirements, guiding the development of the Blackjack card game.\\
-\\
-Requirements
+The description for this project gives some requirements, guiding the development of the Blackjack card game.
+\subsection{Requirements}
 \begin{enumerate}  
 	\item Players must be implemented as clients
 	\item The dealer must be implemented as a server
@@ -18,6 +17,13 @@ Requirements
 	\item The decision to draw additional cards has to be made by the player within a timeout window
 	\item Players must be able to specify an amount of money to bet
 \end{enumerate}
+
+\subsection{Blackjack Rules}
+In Blackjack, one or more players plays against the dealer, seeing which one of them has the best hand. The best hand is evaluated from two cards, dealt to both the player and the dealer. The main objective for the player is to have a higher total hand value than the dealer has, without it being above 21.
+ 
+The cards dealt by the dealer are from a standard 52 cards deck, and each card has a value, with the exception of the Ace, which can have two values, 1 or 11. Jacks, Kings and Queens have a value of 10.  
+
+The cards that the player gets from the dealer is face up, but the dealers cards have one face down and one face up. This means the dealer can see all cards, but the player can only see one of the dealers cards. Players may draw additional cards as long as the total values does not exceed 21. If a player or the dealer exceeds 21, they lose. 
 
 \section{Patterns used in the solution}
 \label{chp:patterns}
