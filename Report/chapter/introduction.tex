@@ -3,4 +3,21 @@
 
 \section{Intro to requirements for the exercise project}
 
+The goal for this project is to develop a distributed Blackjack card game. For this development, some of the concepts and patterns from the TI-ARDI course will be used, as specified in section \ref{chp:patterns}. 
+
+Players will be implemented as clients that will connect to a server, which is the dealer, via a network socket. The players will then interact with the dealer as if playing a real Blackjack game. The rules for the Blackjack game will be implemented, but only to the extent that it makes sense for the project. I.e. splitting cards, doubling down and insurance will not be implemented, as it is not strictly necessary mechanisms for being able to play the game. 
+
+The description for this project gives some requirements, guiding the development of the Blackjack card game.\\
+\\
+Requirements
+\begin{enumerate}  
+	\item Players must be implemented as clients
+	\item The dealer must be implemented as a server
+	\item Connection between client and server must be established through a network socket
+	\item More than one client must be able to establish connection
+	\item The decision to draw additional cards has to be made by the player within a timeout window
+	\item Players must be able to specify an amount of money to bet
+\end{enumerate}
+
 \section{Patterns used in the solution}
+\label{chp:patterns}
