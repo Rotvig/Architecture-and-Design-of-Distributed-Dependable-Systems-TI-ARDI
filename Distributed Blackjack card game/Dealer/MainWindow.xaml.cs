@@ -50,18 +50,18 @@ namespace Dealer
             players.Add(new Player
             {
                 SubscriptionId = message.SubscriptionId.Value,
-                Bet = 0 //Todo fix this
+                Bet = message.EventData.Bet
             });
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
             currentDeck = DeckFactory.CreateDeck().Shuffle();
-
+            button.IsEnabled = false;
             publisher.Publish(Utils.TablePublishTopic, Event.GameStart);
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(20000);
+                Thread.Sleep(5000);
                 HandoutCards();
             });
         }
@@ -73,7 +73,10 @@ namespace Dealer
                 publisher.Publish(
                     Utils.TablePublishTopic,
                     Event.HandoutCards,
-                    new List<Card> {currentDeck.Dequeue(), currentDeck.Dequeue()},
+                    new EventData()
+                    {
+                        Cards = new List<Card> { currentDeck.Dequeue(), currentDeck.Dequeue() }
+                    },
                     player.SubscriptionId,
                     true);
             }

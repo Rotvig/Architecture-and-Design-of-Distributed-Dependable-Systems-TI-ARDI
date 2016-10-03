@@ -19,8 +19,14 @@ namespace Shared
         public Guid? SubscriptionId { get; set; }
         public string Topic { get; set; }
         public Event Event { get; set; }
-        public object EventData { get; set; }
+        public EventData EventData { get; set; }
         public bool PublishToSubscriptionId { get; set; }
+    }
+
+    public class EventData
+    {
+        public List<Card> Cards { get; set; }
+        public int Bet { get; set; }
     }
 
     public enum Command

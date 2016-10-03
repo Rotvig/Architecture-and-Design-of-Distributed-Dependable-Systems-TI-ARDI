@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Shared;
 
 namespace Player
@@ -9,7 +12,9 @@ namespace Player
     {
         private readonly Subscriber subscriber;
         private readonly Publisher publisher;
-
+        private readonly DispatcherTimer timer;
+        private TimeSpan time;
+        private List<Card> cards; 
 
         public MainWindow()
         {
@@ -18,6 +23,8 @@ namespace Player
             subscriber = new Subscriber();
             subscriber.NewMessage += (sender, @event) => Dispatcher.Invoke(() => NewMessage(@event.Message));
             publisher = new Publisher();
+            timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
+            timer.Tick += timer_Tick;
         }
 
         private void NewMessage(Message message)
@@ -25,7 +32,9 @@ namespace Player
             switch (message.Event)
             {
                 case Event.GameStart:
-                    publisher.Publish("Sub " + topic.Text.Trim(), Event.Bet, "", subscriber.SubscriptionId);
+                    time = TimeSpan.FromSeconds(20);
+                    timer.Start();
+                    btn_bet.IsEnabled = true;
                     break;
                 case Event.Bet:
                     break;
@@ -34,6 +43,9 @@ namespace Player
                 case Event.Stand:
                     break;
                 case Event.HandoutCards:
+                    cards =  message.EventData.Cards;
+                    card1.Text = cards.First().CardName;
+                    card2.Text = cards.Last().CardName;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -53,6 +65,30 @@ namespace Player
             subscriber.Unsubscribe();
             ((Button) sender).Visibility = Visibility.Collapsed;
             btn_sub.Visibility = Visibility.Visible;
+        }
+
+        private void btn_bet_Click(object sender, RoutedEventArgs e)
+        {
+            timer.Stop();
+            lblTime.Text = "";
+            publisher.Publish("Sub " + topic.Text.Trim(), Event.Bet, 
+                new EventData
+            {
+                Bet = int.Parse(BetTextBox.Text)
+            }, 
+            subscriber.SubscriptionId
+            );
+        }
+
+        void timer_Tick(object sender, EventArgs e)
+        {
+            lblTime.Text = time.ToString();
+            if (time == TimeSpan.Zero)
+            {
+                timer.Stop();
+                btn_bet.IsEnabled = false;
+            }
+            time = time.Add(TimeSpan.FromSeconds(-1));
         }
     }
 }
