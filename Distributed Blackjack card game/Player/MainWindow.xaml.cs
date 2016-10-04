@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using System.Windows.Threading;
 using Shared;
 
@@ -24,7 +23,7 @@ namespace Player
             subscriber = new Subscriber();
             subscriber.NewMessage += (sender, @event) => Dispatcher.Invoke(() => NewMessage(@event.Message));
             publisher = new Publisher();
-            timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
             timer.Tick += timer_Tick;
         }
 
@@ -33,15 +32,13 @@ namespace Player
             switch (message.Event)
             {
                 case Event.GameStart:
-                    time = TimeSpan.FromSeconds(20);
+                    time = TimeSpan.FromMilliseconds(Utils.Timeout);
                     timer.Start();
                     btn_bet.IsEnabled = true;
-                    break;
-                case Event.Bet:
+                    lblTime.Text = time.ToString();
                     break;
                 case Event.Hit:
-                    break;
-                case Event.Stand:
+                    RecieveCard(message);
                     break;
                 case Event.HandoutCards:
                     CardsHandout(message);
@@ -54,78 +51,107 @@ namespace Player
             }
         }
 
+        private void RecieveCard(Message message)
+        {
+            var card = message.EventData.Cards.Single();
+            cards.Add(card);
+            listBox.Items.Add(card.CardName);
+            totalVal.Text = cards.Sum(x => x.Value).ToString();
+        }
+
         private void GameOver(Message message)
         {
-            throw new NotImplementedException();
+            var msg = "Dealer wins !";
+            //Inform player about the result
+            if (message.EventData.Win)
+            {
+                msg = "YOU WIN !";
+            }
+
+            MessageBox.Show(msg);
+
+            btn_facedown.IsEnabled = false;
+            btn_hit.IsEnabled = false;
+            btn_stand.IsEnabled = false;
+            btn_bet.IsEnabled = false;
         }
 
         private void CardsHandout(Message message)
         {
-            lblTime.Text = time.ToString();
+            lblTime.Text = "";
             cards = message.EventData.Cards;
-            card1.Text = cards.First().CardName;
-            card2.Text = cards.Last().CardName;
-            card1Value.Text = cards.First().Value.ToString();
-            card2Value.Text = cards.Last().Value.ToString();
-            if (cards.First().SecondaryValue != 0 || cards.Last().SecondaryValue != 0)
-            {
-                // MessageBox.Show("You have picked an ace", "Should i count for 1 or 11?",)
+            listBox.Items.Add(cards.Single(x => x.Facedown == false).CardName);
+            listBox.Items.Add("Facedown");
+            totalVal.Text = cards.First().Value.ToString();
+            btn_facedown.IsEnabled = true;
+            btn_stand.IsEnabled = true;
 
-                MessageBoxManager.Yes = "11";
-                MessageBoxManager.No = "1";
-                MessageBoxManager.Register();
+            /*
+            if (cards.All(x => x.SecondaryValue == 0)) return;
 
-                //DialogResult dialogResult = MessageBox.Show("An important decision!", "You have picked an ace. Which value should count as?", MessageBoxButton.YesNo);
-                //if (dialogResult == DialogResult.Yes)
-                //{
-                //    //do something
-                //}
-                //else if (dialogResult == DialogResult.No)
-                //{
-                //    //do something else
-                //}
-            }
+            // MessageBox.Show("You have picked an ace", "Should i count for 1 or 11?",)
+
+            MessageBoxManager.Yes = "11";
+            MessageBoxManager.No = "1";
+            MessageBoxManager.Register();
+
+            //DialogResult dialogResult = MessageBox.Show("An important decision!", "You have picked an ace. Which value should count as?", MessageBoxButton.YesNo);
+            //if (dialogResult == DialogResult.Yes)
+            //{
+            //    //do something
+            //}
+            //else if (dialogResult == DialogResult.No)
+            //{
+            //    //do something else
+            //}
+            */
         }
 
         private void btn_sub_Click(object sender, RoutedEventArgs e)
         {
             subscriber.Subscribe(topic.Text.Trim());
 
-            ((Button)sender).Visibility = Visibility.Collapsed;
+            ((Button) sender).Visibility = Visibility.Collapsed;
             btn_unsub.Visibility = Visibility.Visible;
         }
 
         private void btn_unsub_Click(object sender, RoutedEventArgs e)
         {
             subscriber.Unsubscribe();
-            ((Button)sender).Visibility = Visibility.Collapsed;
+            ((Button) sender).Visibility = Visibility.Collapsed;
             btn_sub.Visibility = Visibility.Visible;
         }
 
         private void btn_bet_Click(object sender, RoutedEventArgs e)
         {
-            timer.Stop();
-            lblTime.Text = "";
+            btn_bet.IsEnabled = false;
             publisher.Publish("Sub " + topic.Text.Trim(), Event.Bet,
                 new EventData
                 {
                     Bet = int.Parse(BetTextBox.Text)
                 },
-            subscriber.SubscriptionId
-            );
+                subscriber.SubscriptionId
+                );
         }
 
         private void btn_hit_Click(object sender, RoutedEventArgs e)
         {
             publisher.Publish("Sub " + topic.Text.Trim(), Event.Hit, null, subscriber.SubscriptionId);
+            btn_bet.IsEnabled = false;
         }
 
         private void btn_stand_Click(object sender, RoutedEventArgs e)
         {
-            publisher.Publish("Sub " + topic.Text.Trim(), Event.Stand, null, subscriber.SubscriptionId);
+            publisher.Publish(
+                "Sub " + topic.Text.Trim(),
+                Event.Stand, new EventData
+                {
+                    Cards = cards
+                },
+                subscriber.SubscriptionId);
         }
 
-        void timer_Tick(object sender, EventArgs e)
+        private void timer_Tick(object sender, EventArgs e)
         {
             if (time == TimeSpan.Zero)
             {
@@ -134,6 +160,17 @@ namespace Player
             }
             time = time.Add(TimeSpan.FromSeconds(-1));
             lblTime.Text = time.ToString();
+        }
+
+        private void btn_facedown_Click(object sender, RoutedEventArgs e)
+        {
+            var card = cards.Single(x => x.Facedown);
+            card.Facedown = false;
+            listBox.Items.Remove("Facedown");
+            listBox.Items.Add(card.CardName);
+            totalVal.Text = cards.Sum(x => x.Value).ToString();
+            btn_facedown.IsEnabled = false;
+            btn_hit.IsEnabled = true;
         }
     }
 }

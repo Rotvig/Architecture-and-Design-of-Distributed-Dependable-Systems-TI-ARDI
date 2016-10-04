@@ -15,6 +15,8 @@ namespace Shared
 
         public const string TablePublishTopic = "Table 1";
         public const string TableSubscribeTopic = "Sub Table 1";
+        public const int Timeout = 10000;
+
     }
 
     public static class Ext

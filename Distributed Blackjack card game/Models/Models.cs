@@ -27,7 +27,7 @@ namespace Shared
     {
         public List<Card> Cards { get; set; }
         public List<Card> DealerCards { get; set; }
-        public int Bet { get; set; }
+        public double Bet { get; set; }
         public bool Win { get; set; }
     }
 
@@ -52,7 +52,7 @@ namespace Shared
     public class Player
     {
         public Guid SubscriptionId { get; set; }
-        public int Bet { get; set; }
+        public double Bet { get; set; }
         public Status Status { get; set; }
         public List<Card> Cards { get; set; } 
     }

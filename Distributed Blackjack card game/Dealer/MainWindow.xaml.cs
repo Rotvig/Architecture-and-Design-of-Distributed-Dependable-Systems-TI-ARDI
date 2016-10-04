@@ -14,7 +14,7 @@ namespace Dealer
         private readonly Subscriber subscriber;
         private Queue<Card> currentDeck;
         private List<Player> players;
-        private Queue<Card> currentDealerCards;
+        private List<Card> currentDealerCards;
 
         public MainWindow()
         {
@@ -58,8 +58,9 @@ namespace Dealer
 
         private void PlayerStands(Message message)
         {
-            players.Single(x => x.SubscriptionId == message.SubscriptionId.Value).Status = Status.Stands;
-            //Player should sent info about what cards are facedown here
+            var player = players.Single(x => x.SubscriptionId == message.SubscriptionId.Value);
+            player.Status = Status.Stands;
+            player.Cards = message.EventData.Cards;
             TryFinishGame();
         }
 
@@ -89,25 +90,28 @@ namespace Dealer
         private void button_Click(object sender, RoutedEventArgs e)
         {
             players = new List<Player>();
-            currentDealerCards = new Queue<Card>();
+            currentDealerCards = new List<Card>();
             currentDeck = DeckFactory.CreateDeck().Shuffle();
             button.IsEnabled = false;
 
             publisher.Publish(Utils.TablePublishTopic, Event.GameStart);
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(20000);
-                HandoutCards();
+                Thread.Sleep(Utils.Timeout+1000);
+                Dispatcher.Invoke(HandoutCards);
             });
         }
 
         private void HandoutCards()
         {
             //Dealer picks two cards for himself
-            currentDealerCards.Enqueue(currentDeck.Dequeue());
+            currentDealerCards.Add(currentDeck.Dequeue());
             var card = currentDeck.Dequeue();
             card.Facedown = true;
-            currentDealerCards.Enqueue(card);
+            currentDealerCards.Add(card);
+            listBox.Items.Add(currentDealerCards.First().CardName);
+            listBox.Items.Add("Facedown");
+            totalVal.Text = currentDealerCards.First().Value.ToString();
 
             foreach (var player in players)
             {
@@ -129,21 +133,34 @@ namespace Dealer
 
         private void TryFinishGame()
         {
-            if (players.All(player => player.Status == Status.Playing)) return;
-            //Dealer should play his hand now
-            //LET ALL PLAYERS KNOW IF THEY WIN OR NOT
+            if (players.Any(player => player.Status == Status.Playing)) return;
+
+            var dealerValue = PlayDealerCards();
+            if (dealerValue.HasValue)
+            {
+                totalVal.Text = dealerValue.Value.ToString();
+            }
+
             foreach (var player in players)
             {
-                if (player.Status == Status.Stands &&
-                    (player.Cards.Sum(x => x.Value) >
-                     currentDealerCards.Where(x => x.Facedown == false).Sum(x => x.Value)))
+                if (player.Status == Status.Stands && 
+                    !dealerValue.HasValue ||
+                    (dealerValue.HasValue && player.Cards.Where(x => x.Facedown == false).Sum(x => x.Value) >= dealerValue))
                 {
+                    var prizeMoney = player.Bet;
+
+                    //Standoff
+                    if (player.Cards.Where(x => x.Facedown == false).Sum(x => x.Value) != dealerValue)
+                    {
+                        prizeMoney = prizeMoney * 1.5;
+                    }
+
                     publisher.Publish(Utils.TablePublishTopic,
                         Event.GamerOver,
                         new EventData
                         {
                             Win = true,
-                            Bet = player.Bet*2
+                            Bet = prizeMoney
                         },
                         player.SubscriptionId,
                         true);
@@ -162,6 +179,60 @@ namespace Dealer
             }
             //Game Over
             button.IsEnabled = true;
+        }
+
+        /// <summary>
+        /// Dealer algorithm returns null when dealer is bust
+        /// </summary>
+        /// <returns></returns>
+        private int? PlayDealerCards()
+        {
+            var totalCardVal = currentDealerCards.Where(x => x.Facedown == false).Sum(x => x.Value);
+            var possibleValues = new List<int> {totalCardVal};
+
+            if (totalCardVal >= 17)
+            {
+                //Check if there is any ace's
+                if (currentDealerCards.Any(x => x.SecondaryValue > 0))
+                {
+                    //Calculate new possibleValues with the change of the ace's value
+                    possibleValues.AddRange(
+                        currentDealerCards
+                            .Where(x => x.SecondaryValue > 0)
+                            .Select(
+                                currentDealerCard =>
+                                    totalCardVal - currentDealerCard.Value + currentDealerCard.SecondaryValue));
+                }
+            }
+            else
+            {
+                Card card;
+                if (currentDealerCards.Any(x => x.Facedown))
+                {
+                    card = currentDealerCards.Single(x => x.Facedown);
+                    card.Facedown = false;
+                    listBox.Items.Remove("Facedown");
+                }
+                else
+                {
+                    card = currentDeck.Dequeue();
+                }
+
+                currentDealerCards.Add(card);
+                listBox.Items.Add(card.CardName);
+
+                PlayDealerCards();
+            }
+
+            try
+            {
+                return possibleValues.Where(x => x <= 21).Max();
+
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }
