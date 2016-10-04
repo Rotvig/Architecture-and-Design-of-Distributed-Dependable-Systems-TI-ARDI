@@ -59,18 +59,8 @@ namespace Dealer
         private void PlayerStands(Message message)
         {
             players.Single(x => x.SubscriptionId == message.SubscriptionId.Value).Status = Status.Stands;
+            //Player should sent info about what cards are facedown here
             TryFinishGame();
-        }
-
-        private void TryFinishGame()
-        {
-            if (players.Any(player => player.Status != Status.Playing))
-            {
-                //Dealer should play his hand now
-                //LET ALL PLAYERS KNOW IF THEY WIN OR NOT
-                //Game Over
-                button.IsEnabled = true;
-            }
         }
 
         private void PlayerHits(Message message)
@@ -124,7 +114,7 @@ namespace Dealer
                 //Pick cards for the player and give one facedown
                 var cards = new List<Card> {currentDeck.Dequeue(), currentDeck.Dequeue()};
                 cards.Last().Facedown = true;
-
+                player.Cards = cards;
                 publisher.Publish(
                     Utils.TablePublishTopic,
                     Event.HandoutCards,
@@ -135,8 +125,43 @@ namespace Dealer
                     player.SubscriptionId,
                     true);
             }
+        }
 
-
+        private void TryFinishGame()
+        {
+            if (players.All(player => player.Status == Status.Playing)) return;
+            //Dealer should play his hand now
+            //LET ALL PLAYERS KNOW IF THEY WIN OR NOT
+            foreach (var player in players)
+            {
+                if (player.Status == Status.Stands &&
+                    (player.Cards.Sum(x => x.Value) >
+                     currentDealerCards.Where(x => x.Facedown == false).Sum(x => x.Value)))
+                {
+                    publisher.Publish(Utils.TablePublishTopic,
+                        Event.GamerOver,
+                        new EventData
+                        {
+                            Win = true,
+                            Bet = player.Bet*2
+                        },
+                        player.SubscriptionId,
+                        true);
+                }
+                else
+                {
+                    publisher.Publish(Utils.TablePublishTopic,
+                        Event.GamerOver,
+                        new EventData
+                        {
+                            Win = false
+                        },
+                        player.SubscriptionId,
+                        true);
+                }
+            }
+            //Game Over
+            button.IsEnabled = true;
         }
     }
 }

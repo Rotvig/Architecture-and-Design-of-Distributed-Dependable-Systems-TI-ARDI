@@ -46,13 +46,22 @@ namespace Player
                 case Event.HandoutCards:
                     CardsHandout(message);
                     break;
+                case Event.GamerOver:
+                    GameOver(message);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
+        private void GameOver(Message message)
+        {
+            throw new NotImplementedException();
+        }
+
         private void CardsHandout(Message message)
         {
+            lblTime.Text = time.ToString();
             cards = message.EventData.Cards;
             card1.Text = cards.First().CardName;
             card2.Text = cards.Last().CardName;
@@ -118,13 +127,13 @@ namespace Player
 
         void timer_Tick(object sender, EventArgs e)
         {
-            lblTime.Text = time.ToString();
             if (time == TimeSpan.Zero)
             {
                 timer.Stop();
                 btn_bet.IsEnabled = false;
             }
             time = time.Add(TimeSpan.FromSeconds(-1));
+            lblTime.Text = time.ToString();
         }
     }
 }
