@@ -7,9 +7,18 @@
 \renewcommand{\headrulewidth}{1pt}
 
 % Insert picture in left side on even pages and right side on odd pages
-\fancyhead[R]{\includegraphics[height=40pt]{figure/header/header}}
-\fancyhead[L]{TIARDI Journal}
+\fancyhead[L]{\includegraphics[height=40pt]{figure/header/header}}
+\fancyhead[R]{TIARDI Journal}
+\newlength{\FHoffset}
+\setlength\FHoffset{0.9cm}
 
+\addtolength\headwidth{2\FHoffset}
+
+\newlength\FHleft
+\newlength\FHright
+
+\setlength\FHleft{1cm}
+\setlength\FHright{0cm}
 
 
 % % % % % % % % % % % % % % FOOTER % % % % % % % % % % % % % % % % % % % % % % %
