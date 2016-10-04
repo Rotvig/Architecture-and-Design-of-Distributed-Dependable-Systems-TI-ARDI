@@ -3,7 +3,6 @@
 
 \section{Intro to requirements for the exercise project}
 
-<<<<<<< HEAD
 The goal for this project is to develop a distributed Blackjack card game. For this development, some of the concepts and patterns from the TI-ARDI course will be used, as specified in section \ref{chp:patterns}. 
 
 Players will be implemented as clients that will connect to a server, which is the dealer, via a network socket. The players will then interact with the dealer as if playing a real Blackjack game. The rules for the Blackjack game will be implemented, but only to the extent that it makes sense for the project. I.e. splitting cards, doubling down and insurance will not be implemented, as it is not strictly necessary mechanisms for being able to play the game. 
@@ -28,8 +27,6 @@ The cards that the player gets from the dealer is face up, but the dealers cards
 
 \section{Patterns used in the solution}
 \label{chp:patterns}
-=======
-\section{Patterns used in the solution}
 \todo{Overskrift skal evt. bare være "Publicher/subscriber pattern}
 The publisher/subscriber pattern has been chosen for this project. The pattern is a widely used message passing pattern, for communication in a distributed system. The pattern is used to decouple the application, such that the threads\todo{skal der skrives threads her?} does not know about each other, they also do not have to be online at the same time to pass message to each other. When developing a system with message passing, decoupling is achieved by three mechanisms, these mechanisms are \emph{space decoupling}, \emph{Time decoupling} and \emph{flow decoupling}. The publish/subscriber pattern comply all of the mechanisms. They will all be described in the sections below.
 
