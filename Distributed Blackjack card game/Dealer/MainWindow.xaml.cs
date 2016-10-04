@@ -216,9 +216,9 @@ namespace Dealer
                 else
                 {
                     card = currentDeck.Dequeue();
+                    currentDealerCards.Add(card);
                 }
 
-                currentDealerCards.Add(card);
                 listBox.Items.Add(card.CardName);
 
                 PlayDealerCards();
