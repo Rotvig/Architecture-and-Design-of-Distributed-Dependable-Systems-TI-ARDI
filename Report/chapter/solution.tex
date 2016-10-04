@@ -17,9 +17,13 @@ The dealer, publish/subscribe server and players will all be deployed on differe
 
 \myFigure{Deployment}{Deployment diagram }{fig:deploy}{1}
 
+\section{Design and implementation}
+The software is divided into four different projects: Dealer, Player, PubSubServer and Shared. The Shared project contains classes used by both the Dealer and Player. By using a shared project no code is copiedand the logic needed by both Player and Dealer can be placed in this project.
+
 \section{Design and implementation of client}
 
 \subsection{Intro to design of client}
+The client in this context is the Player. The Player furthermore uses classes from the Shared project and communicates with the publish subscribe server.
 
 \subsection{Class diagram}
 
@@ -29,6 +33,7 @@ The dealer, publish/subscribe server and players will all be deployed on differe
 
 
 \section{Design and implementation of server}
+The server in this context is the Dealer. The Dealer furthermore uses classes from the Shared project and communicates with the publish subscribe server.
 
 \subsection{Intro to design of server}
 
