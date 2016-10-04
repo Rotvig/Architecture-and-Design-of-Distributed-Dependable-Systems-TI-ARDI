@@ -243,3 +243,4 @@ _Pvt_Extensions
 *.bcf
 *.xml
 Report/report.synctex.gz(busy)
+*.pdf
