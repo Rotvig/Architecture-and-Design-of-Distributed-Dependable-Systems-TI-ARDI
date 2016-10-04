@@ -1,12 +1,29 @@
 \chapter{Solution}
+This chapter will explain and discuss the chosen solution for implementing the system described in chapter \ref{chp:intro}
 
 \section{Discussion of architecture decisions}
+The architecture is based on the publish/subscribe pattern. As shown in figure \ref{fig:basicArc} the dealer and players are decoupled with a publish/subscribe server. This decouples the clients and server in both time, space and flow. By decoupling in both space the participants does not need to know each and it is therefore easier to replace a client or server implementation. Decoupling clients and servers in flow will ensure that they do not block each other. Decoupling time is to ensure that a client or server can be offline and get the message later. It is important to note that the timer decoupling is difficult in a game scenario as multiple players will be forced to wait for a client
+
+\myFigure{basicArc}{System Architecture}{fig:basicArc}{0.8}
+
+The publish/subscribe will in this solution be done topic-based. This approach allows the possibility of easily dividing different tables in different topics. The topics will in this project use URL like strings.
+
+More patterns could have been used in the solution for example the Acceptor/Connector pattern for decoupling initialization of connection and service handling. But as no different concrete service handlers were needed when using publish/subscribe so it the value of implementing it was not high enough compared with the added complexity. Also the leader/follower pattern could have been implemented to execute each publish message but a simple ThreadPool which works similar to the leader/follower pattern is chosen for programming simplicity.
+
+The solution is focusing on the publish/subscribe pattern to drive the architecture and ensure a high degree of decoupling. The software is not at a large scale and introducing many more patterns would introduce a lot more complexity to a program that is implemented in a quite simply with just the publish/subscribe pattern.
 
 \section{Deployment diagram}
+The dealer, publish/subscribe server and players will all be deployed on different hosts. The different entities will then communicate through an UDP socket using topic-based messages. The player and dealer will subscribe to specific topics through the publish/subscribe server.
+
+\myFigure{Deployment}{Deployment diagram }{fig:deploy}{1}
+
+\section{Design and implementation}
+The software is divided into four different projects: Dealer, Player, PubSubServer and Shared. The Shared project contains classes used by both the Dealer and Player. By using a shared project no code is copiedand the logic needed by both Player and Dealer can be placed in this project.
 
 \section{Design and implementation of client}
 
 \subsection{Intro to design of client}
+The client in this context is the Player. The Player furthermore uses classes from the Shared project and communicates with the publish subscribe server.
 
 \subsection{Class diagram}
 
@@ -16,6 +33,7 @@
 
 
 \section{Design and implementation of server}
+The server in this context is the Dealer. The Dealer furthermore uses classes from the Shared project and communicates with the publish subscribe server.
 
 \subsection{Intro to design of server}
 
