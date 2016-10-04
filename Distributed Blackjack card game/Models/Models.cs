@@ -28,6 +28,7 @@ namespace Shared
         public List<Card> Cards { get; set; }
         public List<Card> DealerCards { get; set; }
         public int Bet { get; set; }
+        public bool Win { get; set; }
     }
 
     public enum Command
@@ -40,6 +41,7 @@ namespace Shared
     public enum Event
     {
         GameStart,
+        GamerOver,
         HandoutCards,
         Bet,
         Hit,
@@ -52,7 +54,7 @@ namespace Shared
         public Guid SubscriptionId { get; set; }
         public int Bet { get; set; }
         public Status Status { get; set; }
-
+        public List<Card> Cards { get; set; } 
     }
 
     public enum Status
