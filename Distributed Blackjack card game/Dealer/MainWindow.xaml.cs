@@ -136,10 +136,7 @@ namespace Dealer
             if (players.Any(player => player.Status == Status.Playing)) return;
 
             var dealerValue = PlayDealerCards();
-            if (dealerValue.HasValue)
-            {
-                totalVal.Text = dealerValue.Value.ToString();
-            }
+            totalVal.Text = dealerValue?.ToString() ?? "Bust";
 
             foreach (var player in players)
             {
@@ -187,6 +184,20 @@ namespace Dealer
         /// <returns></returns>
         private int? PlayDealerCards()
         {
+            var possibleValues = PlayCards();
+
+            try
+            {
+                return possibleValues.Where(x => x <= 21).Max();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private List<int> PlayCards()
+        {
             var totalCardVal = currentDealerCards.Where(x => x.Facedown == false).Sum(x => x.Value);
             var possibleValues = new List<int> {totalCardVal};
 
@@ -203,6 +214,7 @@ namespace Dealer
                                 currentDealerCard =>
                                     totalCardVal - currentDealerCard.Value + currentDealerCard.SecondaryValue));
                 }
+                return possibleValues;
             }
             else
             {
@@ -220,19 +232,9 @@ namespace Dealer
                 }
 
                 listBox.Items.Add(card.CardName);
-
-                PlayDealerCards();
             }
 
-            try
-            {
-                return possibleValues.Where(x => x <= 21).Max();
-
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return PlayCards();
         }
     }
 }
