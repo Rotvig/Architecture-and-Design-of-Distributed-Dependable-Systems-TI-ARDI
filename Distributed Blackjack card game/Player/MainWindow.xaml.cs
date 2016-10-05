@@ -57,6 +57,17 @@ namespace Player
             cards.Add(card);
             listBox.Items.Add(card.CardName);
             totalVal.Text = cards.Sum(x => x.Value).ToString();
+            var value = cards.Sum(x => x.Value);
+
+            if (value > 21)
+            {
+                publisher.Publish("Sub " + topic.Text.Trim(), Event.Bust, null, subscriber.SubscriptionId);
+                totalVal.Text = "Bust";
+            }
+            else
+            {
+                totalVal.Text = value.ToString();
+            }
         }
 
         private void GameOver(Message message)
@@ -168,7 +179,15 @@ namespace Player
             card.Facedown = false;
             listBox.Items.Remove("Facedown");
             listBox.Items.Add(card.CardName);
-            totalVal.Text = cards.Sum(x => x.Value).ToString();
+            var value = cards.Sum(x => x.Value);
+
+            if (value > 21)
+            {
+                publisher.Publish("Sub " + topic.Text.Trim(), Event.Bust, null, subscriber.SubscriptionId);
+                return;
+            }
+
+            totalVal.Text = value.ToString();
             btn_facedown.IsEnabled = false;
             btn_hit.IsEnabled = true;
         }
