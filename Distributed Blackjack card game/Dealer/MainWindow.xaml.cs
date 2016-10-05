@@ -201,38 +201,37 @@ namespace Dealer
             var totalCardVal = currentDealerCards.Where(x => x.Facedown == false).Sum(x => x.Value);
             var possibleValues = new List<int> {totalCardVal};
 
+            //Check if there are any ace's
+            if (currentDealerCards.Any(x => x.SecondaryValue > 0) && totalCardVal >= 6 && totalCardVal <= 10)
+            {
+                //Calculate new possibleValues with the change of the ace's value
+                possibleValues.AddRange(
+                    currentDealerCards
+                        .Where(x => x.SecondaryValue > 0)
+                        .Select(
+                            currentDealerCard =>
+                                totalCardVal - currentDealerCard.Value + currentDealerCard.SecondaryValue));
+                return possibleValues;
+            }
             if (totalCardVal >= 17)
             {
-                //Check if there is any ace's
-                if (currentDealerCards.Any(x => x.SecondaryValue > 0))
-                {
-                    //Calculate new possibleValues with the change of the ace's value
-                    possibleValues.AddRange(
-                        currentDealerCards
-                            .Where(x => x.SecondaryValue > 0)
-                            .Select(
-                                currentDealerCard =>
-                                    totalCardVal - currentDealerCard.Value + currentDealerCard.SecondaryValue));
-                }
                 return possibleValues;
+            }
+
+            Card card;
+            if (currentDealerCards.Any(x => x.Facedown))
+            {
+                card = currentDealerCards.Single(x => x.Facedown);
+                card.Facedown = false;
+                listBox.Items.Remove("Facedown");
             }
             else
             {
-                Card card;
-                if (currentDealerCards.Any(x => x.Facedown))
-                {
-                    card = currentDealerCards.Single(x => x.Facedown);
-                    card.Facedown = false;
-                    listBox.Items.Remove("Facedown");
-                }
-                else
-                {
-                    card = currentDeck.Dequeue();
-                    currentDealerCards.Add(card);
-                }
-
-                listBox.Items.Add(card.CardName);
+                card = currentDeck.Dequeue();
+                currentDealerCards.Add(card);
             }
+
+            listBox.Items.Add(card.CardName);
 
             return PlayCards();
         }
