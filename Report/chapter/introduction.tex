@@ -3,7 +3,7 @@
 
 \section{Intro to requirements for the exercise project}
 
-The goal for this project is to develop a distributed Blackjack card game. For this development, some of the concepts and patterns from the TI-ARDI course will be used, as specified in section \ref{chp:patterns}. 
+The goal for this project is to develop a distributed blackjack card game. For the development, some of the concepts and patterns from the TI-ARDI course will be used, as specified in section \ref{chp:patterns}. 
 
 Players will be implemented as clients that will connect to a server, which is the dealer, via a network socket. The players will then interact with the dealer as if playing a real Blackjack game. The rules for the Blackjack game will be implemented, but only to the extent that it makes sense for the project. I.e. splitting cards, doubling down and insurance will not be implemented, as it is not strictly necessary mechanisms for being able to play the game. 
 
@@ -19,7 +19,7 @@ The description for this project gives some requirements, guiding the developmen
 \end{enumerate}
 
 \subsection{Blackjack Rules}
-In Blackjack, one or more players plays against the dealer, seeing which one of them has the best hand. The best hand is evaluated from two cards, dealt to both the player and the dealer. The main objective for the player is to have a higher total hand value than the dealer has, without it being above 21.
+In Blackjack, one or more players plays against the dealer, seeing which one of them has the best hand. The best hand is evaluated from two cards, dealt to both the players and the dealer. The main objective for the players is to have a higher total hand value than the dealer has, without it being above 21.
  
 The cards dealt by the dealer are from a standard 52 cards deck, and each card has a value, with the exception of the Ace, which can have two values, 1 or 11. Jacks, Kings and Queens have a value of 10.  
 
@@ -27,18 +27,22 @@ The cards that the player gets from the dealer is face up, but the dealers cards
 
 \section{Patterns used in the solution}
 \label{chp:patterns}
-\todo{Overskrift skal evt. bare være "Publicher/subscriber pattern}
-The publisher/subscriber pattern has been chosen for this project. The pattern is a widely used message passing pattern, for communication in a distributed system. The pattern is used to decouple the application, such that the threads\todo{skal der skrives threads her?} does not know about each other, they also do not have to be online at the same time to pass message to each other. When developing a system with message passing, decoupling is achieved by three mechanisms, these mechanisms are \emph{space decoupling}, \emph{Time decoupling} and \emph{flow decoupling}. The publish/subscriber pattern comply all of the mechanisms. They will all be described in the sections below.
+The publisher/subscriber pattern has been chosen for this project. The pattern is a widely used message passing pattern, for communication in a distributed system. The pattern is used to decouple entities in an application. Three different types of decoupling can be achieved: \emph{space decoupling}, \emph{Time decoupling} and \emph{flow decoupling}. The publish/subscriber pattern decouples in all three.
 
 \subsection{Space decoupling}
-Space decoupling is that the publisher and the subscriber may not know about each other. When the publisher have a new message that it want to publish to it's subscribers, it will publish it to an event service. More publishers can publish their content to this service. A subscriber who wants to subscribe on some specific content, will tell the event service that it is interested in some specific messages. When doing so, it does not matter who the publisher is, it only matters which kind of content it is subscribing to. The event service will make sure that the subscriber receives the content that it has subscribed to. In figure \ref{fig:space} the principle is shown
+Space decoupling is that the publishers and the subscribers does not know about each other. In publisher/subscribe pattern the two are decoupled in space by using an event service. The event service will then mediate the messages between the publisher and the subscriber so that the two do not need to know each other. The subscriber will just subscribe to specific content through the event service and the publisher will publish messages to the event service. In figure \ref{fig:space} the principle is shown
 
 \myFigure{space}{Space decoupling}{fig:space}{0.8}
 
 \subsection{Time decoupling}
-Time decoupling is another mechanism to decouple the publisher from the subscriber. As shown in the upper part of figure \ref{fig:time} the publisher can publish content to the event service while the subscriber is disconnected. In the lower part of figure \ref{fig:time}, the subscriber later on receives the content it has subscribed for, even though the publisher i disconnected at this very moment.
+The publisher/subscriber pattern is also time decoupled. As shown in the upper part of figure \ref{fig:time} the publisher can publish content to the event service while the subscriber is disconnected. In the lower part of figure \ref{fig:time}, the subscriber later on receives the content it has subscribed for, even though the publisher is disconnected at this very moment.
+
 \myFigure{time}{Time decoupling}{fig:time}{0.8}
+\FloatBarrier
 
 \subsection{Flow decoupling}
 The last mechanism that the publisher/subscriber pattern holds is the decoupling in flow. The publisher will not get blocked when producing events. The flow on the subscriber will not be interrupted, as it can be notified about an incoming event while it concurrently is processing another activity.
 \myFigure{flow}{Flow decoupling}{fig:flow}{0.8}
+
+\section{Why Publisher/subscribe pattern}
+Because of the high degree of decoupling the publisher/subscribe pattern is chosen for the implementation of the blackjack game. 
