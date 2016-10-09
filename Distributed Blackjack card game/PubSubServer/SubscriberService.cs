@@ -36,13 +36,13 @@ namespace PubSubServer
                 recv = server.ReceiveFrom(data, ref remoteEp);
                 var message = JsonConvert.DeserializeObject<Message>(Encoding.ASCII.GetString(data, 0, recv));
 
-                switch (message.Command)
+                switch (message.Header.Command)
                 {
                     case Command.Subscribe:
-                        Filter.AddSubscriber(message.Topic, message.SubscriptionId.Value, remoteEp);
+                        Filter.AddSubscriber(message.Header.Topic, message.Content.SubscriptionId.Value, remoteEp);
                         break;
                     case Command.Unsubscribe:
-                        Filter.RemoveSubscriber(message.Topic, message.SubscriptionId.Value, remoteEp);
+                        Filter.RemoveSubscriber(message.Header.Topic, message.Content.SubscriptionId.Value);
                         break;
                 }
             }

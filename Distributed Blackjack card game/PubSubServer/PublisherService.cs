@@ -13,11 +13,13 @@ namespace PubSubServer
     public class PublisherService
     {
         private const int Port = 10002;
+        private static MessageService messageService;
 
         public void StartPublisherService()
         {
             var th = new Thread(HostPublisherService) {IsBackground = true};
             th.Start();
+            messageService = new MessageService();
         }
 
         private void HostPublisherService()
@@ -39,17 +41,15 @@ namespace PubSubServer
                     var recv = 0;
                     var data = new byte[1024];
                     recv = server.ReceiveFrom(data, ref remoteEp);
-                    var serializedMessage = Encoding.ASCII.GetString(data, 0, recv);
-                    var deserializedMessage = JsonConvert.DeserializeObject<Message>(serializedMessage);
+                    var deserializedMessage = JsonConvert.DeserializeObject<Message>(Encoding.ASCII.GetString(data, 0, recv));
 
-                    if (deserializedMessage.Command != Command.Publish) continue;
-                    if (string.IsNullOrEmpty(deserializedMessage.Topic)) continue;
+                    if (deserializedMessage.Header.Command != Command.Publish) continue;
+                    if (string.IsNullOrEmpty(deserializedMessage.Header.Topic)) continue;
 
-                    var subscriberListForThisTopic = Filter.GetSubscribers(deserializedMessage.Topic);
+                    var subscriberListForThisTopic = Filter.GetSubscribers(deserializedMessage.Header.Topic);
                     var workerThreadParameters = new WorkerThreadParameters
                     {
-                        Server = server,
-                        SerializedMessage = serializedMessage,
+                        MessageService = messageService,
                         SubscriberListForThisTopic = subscriberListForThisTopic,
                         DeserializedMessage = deserializedMessage
                     };
@@ -66,34 +66,32 @@ namespace PubSubServer
         public static void Publish(object stateInfo)
         {
             var workerThreadParameters = (WorkerThreadParameters) stateInfo;
-            var server = workerThreadParameters.Server;
             var subscriberListForThisTopic = workerThreadParameters.SubscriberListForThisTopic;
 
             if (subscriberListForThisTopic == null) return;
 
-            if (workerThreadParameters.DeserializedMessage.SubscriptionId != null && workerThreadParameters.DeserializedMessage.PublishToSubscriptionId)
+            if (workerThreadParameters.DeserializedMessage.Content.SubscriptionId != null && workerThreadParameters.DeserializedMessage.Header.PublishToSubscriptionId)
             {
-                var subscriber = subscriberListForThisTopic.Single(x => x.SubscriptionId == workerThreadParameters.DeserializedMessage.SubscriptionId);
-                PublishMessage(server, workerThreadParameters.SerializedMessage, subscriber);
+                var subscriber = subscriberListForThisTopic.Single(x => x.SubscriptionId == workerThreadParameters.DeserializedMessage.Content.SubscriptionId);
+                PublishMessage(workerThreadParameters.MessageService, workerThreadParameters.DeserializedMessage, subscriber);
                 return;
             }
 
             foreach (var subscriber in subscriberListForThisTopic)
             {
-                PublishMessage(server, workerThreadParameters.SerializedMessage, subscriber);
+                PublishMessage(workerThreadParameters.MessageService, workerThreadParameters.DeserializedMessage, subscriber);
             }
         }
 
-        private static void PublishMessage(Socket server, string serializedMessage, SubscriberTuple subscriber)
+        private static void PublishMessage(MessageService service, Message message, SubscriberTuple subscriber)
         {
-            server.SendTo(Encoding.ASCII.GetBytes(serializedMessage), serializedMessage.Length, SocketFlags.None, subscriber.Endpoint);
+            service.AddItemToList(message, subscriber.Endpoint);
         }
     }
 
     internal class WorkerThreadParameters
     {
-        public Socket Server { get; set; }
-        public string SerializedMessage { get; set; }
+        public MessageService MessageService { get; set; }
         public Message DeserializedMessage { get; set; }
         public List<SubscriberTuple> SubscriberListForThisTopic { get; set; }
     }

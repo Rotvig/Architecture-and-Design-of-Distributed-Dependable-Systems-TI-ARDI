@@ -27,7 +27,7 @@ namespace Player
             timer.Tick += timer_Tick;
         }
 
-        private void NewMessage(Message message)
+        private void NewMessage(MessageContent message)
         {
             switch (message.Event)
             {
@@ -51,7 +51,7 @@ namespace Player
             }
         }
 
-        private void RecieveCard(Message message)
+        private void RecieveCard(MessageContent message)
         {
             var card = message.EventData.Cards.Single();
             cards.Add(card);
@@ -70,7 +70,7 @@ namespace Player
             }
         }
 
-        private void GameOver(Message message)
+        private void GameOver(MessageContent message)
         {
             var msg = "Dealer wins !";
             //Inform player about the result
@@ -87,7 +87,7 @@ namespace Player
             btn_bet.IsEnabled = false;
         }
 
-        private void CardsHandout(Message message)
+        private void CardsHandout(MessageContent message)
         {
             lblTime.Text = "";
             cards = message.EventData.Cards;

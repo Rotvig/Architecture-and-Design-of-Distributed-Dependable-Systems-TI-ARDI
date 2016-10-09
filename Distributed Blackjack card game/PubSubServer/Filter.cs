@@ -60,15 +60,28 @@ namespace PubSubServer
 
         }
 
-        static public void RemoveSubscriber(String topicName, Guid subscriptionId, EndPoint subscriberEndPoint)
+        static public void RemoveSubscriber(String topicName, EndPoint endPoint)
         {
             lock (typeof(Filter))
             {
                 if (!SubscribersList.ContainsKey(topicName)) return;
 
-                if (SubscribersList[topicName].Contains(SubscribersList[topicName].First(x => x.Endpoint == subscriberEndPoint)))
+                if (SubscribersList[topicName].Contains(SubscribersList[topicName].First(x => x.Endpoint == endPoint)))
                 {
-                    SubscribersList[topicName].Remove(SubscribersList[topicName].First(x => x.Endpoint == subscriberEndPoint));
+                    SubscribersList[topicName].Remove(SubscribersList[topicName].First(x => x.Endpoint == endPoint));
+                }
+            }
+        }
+
+        static public void RemoveSubscriber(String topicName, Guid SubscriptionId)
+        {
+            lock (typeof(Filter))
+            {
+                if (!SubscribersList.ContainsKey(topicName)) return;
+
+                if (SubscribersList[topicName].Contains(SubscribersList[topicName].First(x => x.SubscriptionId == SubscriptionId)))
+                {
+                    SubscribersList[topicName].Remove(SubscribersList[topicName].First(x => x.SubscriptionId == SubscriptionId));
                 }
             }
         }

@@ -15,12 +15,25 @@ namespace Shared
 
     public class Message
     {
-        public Command Command { get; set; }
-        public Guid? SubscriptionId { get; set; }
-        public string Topic { get; set; }
+        public MessageContent Content { get; set; }
+        public MessageHeader Header { get; set; }
+    }
+
+    public class MessageContent
+    {
         public Event Event { get; set; }
         public EventData EventData { get; set; }
+        public Guid? SubscriptionId { get; set; }
+    }
+
+    public class MessageHeader
+    {
+        public Command Command { get; set; }
+        public int MessageNumber { get; set; }
+        public DateTime? Timeout { get; set; }
+        public string Topic { get; set; }
         public bool PublishToSubscriptionId { get; set; }
+        public int PublishTries { get; set; }
     }
 
     public class EventData
@@ -35,7 +48,8 @@ namespace Shared
     {
         Publish,
         Subscribe,
-        Unsubscribe
+        Unsubscribe,
+        Ack
     }
 
     public enum Event

@@ -29,7 +29,7 @@ namespace Dealer
             subscriber.NewMessage += (sender, @event) => Dispatcher.Invoke(() => NewMessage(@event.Message));
         }
 
-        private void NewMessage(Message message)
+        private void NewMessage(MessageContent message)
         {
             switch (message.Event)
             {
@@ -50,13 +50,13 @@ namespace Dealer
             }
         }
 
-        private void PlayerBust(Message message)
+        private void PlayerBust(MessageContent message)
         {
             players.Single(x => x.SubscriptionId == message.SubscriptionId.Value).Status = Status.Bust;
             TryFinishGame();
         }
 
-        private void PlayerStands(Message message)
+        private void PlayerStands(MessageContent message)
         {
             var player = players.Single(x => x.SubscriptionId == message.SubscriptionId.Value);
             player.Status = Status.Stands;
@@ -64,7 +64,7 @@ namespace Dealer
             TryFinishGame();
         }
 
-        private void PlayerHits(Message message)
+        private void PlayerHits(MessageContent message)
         {
             publisher.Publish(
                 Utils.TablePublishTopic,
@@ -78,7 +78,7 @@ namespace Dealer
                 );
         }
 
-        private void AddPlayer(Message message)
+        private void AddPlayer(MessageContent message)
         {
             players.Add(new Player
             {
