@@ -32,7 +32,7 @@ In figure \ref{fig:pubSub_class} the structure is shown. It consists of a Publis
 Message about clients who wants to subscribe or unsubscribe are handled by the SubscriberService that are listening for these types of messages and handling them. It will add  or remove subscribers to a dictionary. This dictionary is handled by the Filter class.
 
 The Filter class provides an implementation of the dictionary that holds the subscribers endpoint and which topics they are interested in. Through the Filter class the subscriber can easily add and remove subscribers while the publisher can easily locate subscribers relevant for a topic.
-
+\FloatBarrier
 
 \section{Design and implementation of client}
 The client in this context is the Player. The Player furthermore uses classes from the Shared project and communicates with the publish subscribe server. The Player subscribes to a specific table.
@@ -40,6 +40,7 @@ The client in this context is the Player. The Player furthermore uses classes fr
 \subsection{Class diagram}
 
 \myFigure{client_class}{Client class diagram }{fig:client_class}{1}
+\FloatBarrier
 
 \section{Design and implementation of server}
 The server in this context is the Dealer. The Dealer furthermore uses classes from the Shared project and communicates with the publish subscribe server.
@@ -47,6 +48,7 @@ The server in this context is the Dealer. The Dealer furthermore uses classes fr
 \subsection{Class diagram}
 
 \myFigure{server_class}{Server class diagram }{fig:server_class}{1}
+\FloatBarrier
 
 \subsection{Sequence diagram}
 
