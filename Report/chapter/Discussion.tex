@@ -1,1 +1,15 @@
 \chapter{Discussion of results}
+In this project a distributed blackjack game has been developed that fulfils the requirements. The implementation uses the regular game rules.
+
+In the implementation a dealer and player has been developed. Multiple players can join a game with a single dealer. The players and dealer only communicate through a publish/subscribe server. This allows for decoupling in both space, flow and time.
+
+The decoupling in time was achieved by implementing a message queue on the publish/subscribe server. Furthermore time-outs were used so that players and the dealer did not have to wait too long for a disconnected player.
+
+The low coupling between dealer and players makes it easier to modify and extend them independently. 
+
+The publish/subscribe pattern was implemented with topic-based communication. This makes it easy extend the current solution with new tables as a new table would just be a new topic. In the current solution only the topic \emph{table-1} is used.
+
+Furthermore more patterns could have been used in the final solution such as the Acceptor/connector pattern and the leader follower pattern. The acceptor/connector pattern could have decoupled connection initialization and processing. Also leader/follower could have been used to process background tasks instead of a .net implemented thread pool. But more patterns were not added because of the time constraint. 
+
+The final implementation of the blackjack game is though easy to modify and extend as it uses the publish/subscribe pattern and is decoupled in both flow, space and time. Additionally it fulfils the requirements and is a well implemented solution for the given exercise.
+ 
