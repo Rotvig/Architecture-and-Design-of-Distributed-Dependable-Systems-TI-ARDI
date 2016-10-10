@@ -165,7 +165,7 @@ namespace Dealer
                     }
 
                     publisher.Publish(Utils.TablePublishTopic,
-                        Event.GamerOver,
+                        Event.GameOver,
                         null,
                         new EventData
                         {
@@ -178,7 +178,7 @@ namespace Dealer
                 else
                 {
                     publisher.Publish(Utils.TablePublishTopic,
-                        Event.GamerOver,
+                        Event.GameOver,
                         null,
                         new EventData
                         {

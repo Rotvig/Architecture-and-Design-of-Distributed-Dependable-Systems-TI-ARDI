@@ -45,7 +45,7 @@ namespace Player
                 case Event.HandoutCards:
                     CardsHandout(message.Content);
                     break;
-                case Event.GamerOver:
+                case Event.GameOver:
                     GameOver(message.Content);
                     break;
                 default:

@@ -57,7 +57,7 @@ namespace Shared
     public enum Event
     {
         GameStart,
-        GamerOver,
+        GameOver,
         HandoutCards,
         Bet,
         Hit,
