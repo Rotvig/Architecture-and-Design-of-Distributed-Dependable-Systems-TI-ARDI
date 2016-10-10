@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Runtime;
 
 namespace Shared
 {
@@ -15,12 +16,25 @@ namespace Shared
 
     public class Message
     {
-        public Command Command { get; set; }
-        public Guid? SubscriptionId { get; set; }
-        public string Topic { get; set; }
+        public MessageContent Content { get; set; }
+        public MessageHeader Header { get; set; }
+    }
+
+    public class MessageContent
+    {
         public Event Event { get; set; }
         public EventData EventData { get; set; }
+        public Guid? SubscriptionId { get; set; }
+    }
+
+    public class MessageHeader
+    {
+        public Command Command { get; set; }
+        public int MessageNumber { get; set; }
+        public DateTime? Timeout { get; set; }
+        public string Topic { get; set; }
         public bool PublishToSubscriptionId { get; set; }
+        public int PublishTries { get; set; }
     }
 
     public class EventData
@@ -29,13 +43,15 @@ namespace Shared
         public List<Card> DealerCards { get; set; }
         public double Bet { get; set; }
         public bool Win { get; set; }
+        public int value { get; set; }
     }
 
     public enum Command
     {
         Publish,
         Subscribe,
-        Unsubscribe
+        Unsubscribe,
+        Ack
     }
 
     public enum Event
@@ -54,7 +70,8 @@ namespace Shared
         public Guid SubscriptionId { get; set; }
         public double Bet { get; set; }
         public Status Status { get; set; }
-        public List<Card> Cards { get; set; } 
+        public List<Card> Cards { get; set; }
+        public int value { get; set; }
     }
 
     public enum Status
@@ -77,6 +94,7 @@ namespace Shared
         public int Value { get; }
         public int SecondaryValue { get; }
         public bool Facedown { get; set; }
+        public bool Flipped { get; set; }
     }
 
     public static class DeckFactory
@@ -86,7 +104,7 @@ namespace Shared
             return new List<Card>()
             {
                 //Heart
-                new Card("Ace-Heart", 1, 11),
+                new Card("Ace-Heart", 11, 1),
                 new Card("2-Heart", 2),
                 new Card("3-Heart", 3),
                 new Card("4-Heart", 4),
@@ -100,7 +118,7 @@ namespace Shared
                 new Card("Queen-Heart", 10),
                 new Card("King-Heart", 10),
                 //Clubs
-                new Card("Ace-Clubs", 1, 11),
+                new Card("Ace-Clubs", 11, 1),
                 new Card("2-Clubs", 2),
                 new Card("3-Clubs", 3),
                 new Card("4-Clubs", 4),
@@ -114,7 +132,7 @@ namespace Shared
                 new Card("Queen-Clubs", 10),
                 new Card("King-Clubs", 10),
                 //Diamonds
-                new Card("Ace-Diamonds", 1, 11),
+                new Card("Ace-Diamonds", 11, 1),
                 new Card("2-Diamonds", 2),
                 new Card("3-Diamonds", 3),
                 new Card("4-Diamonds", 4),
@@ -128,7 +146,7 @@ namespace Shared
                 new Card("Queen-Diamonds", 10),
                 new Card("King-Diamonds", 10),
                 //Spades
-                new Card("Ace-Spades", 1, 11),
+                new Card("Ace-Spades", 11, 1),
                 new Card("2-Spades", 2),
                 new Card("3-Spades", 3),
                 new Card("4-Spades", 4),

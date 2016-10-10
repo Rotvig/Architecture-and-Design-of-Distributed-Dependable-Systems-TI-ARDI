@@ -31,7 +31,7 @@ namespace Dealer
 
         private void NewMessage(Message message)
         {
-            switch (message.Event)
+            switch (message.Content.Event)
             {
                 case Event.Bet:
                     AddPlayer(message);
@@ -52,15 +52,15 @@ namespace Dealer
 
         private void PlayerBust(Message message)
         {
-            players.Single(x => x.SubscriptionId == message.SubscriptionId.Value).Status = Status.Bust;
+            players.Single(x => x.SubscriptionId == message.Content.SubscriptionId.Value).Status = Status.Bust;
             TryFinishGame();
         }
 
         private void PlayerStands(Message message)
         {
-            var player = players.Single(x => x.SubscriptionId == message.SubscriptionId.Value);
+            var player = players.Single(x => x.SubscriptionId == message.Content.SubscriptionId.Value);
             player.Status = Status.Stands;
-            player.Cards = message.EventData.Cards;
+            player.value = message.Content.EventData.value;
             TryFinishGame();
         }
 
@@ -73,7 +73,7 @@ namespace Dealer
                 {
                     Cards = new List<Card> {currentDeck.Dequeue()}
                 },
-                message.SubscriptionId,
+                message.Content.SubscriptionId,
                 true
                 );
         }
@@ -82,8 +82,8 @@ namespace Dealer
         {
             players.Add(new Player
             {
-                SubscriptionId = message.SubscriptionId.Value,
-                Bet = message.EventData.Bet
+                SubscriptionId = message.Content.SubscriptionId.Value,
+                Bet = message.Content.EventData.Bet
             });
         }
 
@@ -94,7 +94,7 @@ namespace Dealer
             currentDeck = DeckFactory.CreateDeck().Shuffle();
             button.IsEnabled = false;
 
-            publisher.Publish(Utils.TablePublishTopic, Event.GameStart);
+            publisher.Publish(Utils.TablePublishTopic, Event.GameStart, null, null, false, TimeSpan.FromSeconds(10));
             Task.Factory.StartNew(() =>
             {
                 Thread.Sleep(Utils.Timeout+1000);
@@ -142,7 +142,7 @@ namespace Dealer
             {
                 if (player.Status == Status.Stands && 
                     !dealerValue.HasValue ||
-                    (dealerValue.HasValue && player.Cards.Where(x => x.Facedown == false).Sum(x => x.Value) >= dealerValue))
+                    (dealerValue.HasValue && player.value >= dealerValue))
                 {
                     var prizeMoney = player.Bet;
 

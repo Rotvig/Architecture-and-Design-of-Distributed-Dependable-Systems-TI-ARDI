@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Shared;
-using Enumerable = System.Linq.Enumerable;
 
 namespace PubSubServer
 {
-    class Filter
+    class Subscribers
     {
         static readonly Dictionary<string, List<SubscriberTuple>> _subscribersList = new Dictionary<string, List<SubscriberTuple>>();
 
@@ -15,17 +14,16 @@ namespace PubSubServer
         {
             get
             {
-                lock (typeof(Filter))
+                lock (typeof(Subscribers))
                 {
                     return _subscribersList;
                 }
             }
-
         }
 
         static public List<SubscriberTuple> GetSubscribers(String topicName)
         {
-            lock (typeof(Filter))
+            lock (typeof(Subscribers))
             {
                 if (SubscribersList.ContainsKey(topicName))
                 {
@@ -38,7 +36,7 @@ namespace PubSubServer
 
         static public void AddSubscriber(string topicName, Guid subscriptionId, EndPoint subscriberEndPoint)
         {
-            lock (typeof(Filter))
+            lock (typeof(Subscribers))
             {
                 if (SubscribersList.ContainsKey(topicName))
                 {
@@ -60,15 +58,15 @@ namespace PubSubServer
 
         }
 
-        static public void RemoveSubscriber(String topicName, Guid subscriptionId, EndPoint subscriberEndPoint)
+        static public void RemoveSubscriber(String topicName, Guid SubscriptionId)
         {
-            lock (typeof(Filter))
+            lock (typeof(Subscribers))
             {
                 if (!SubscribersList.ContainsKey(topicName)) return;
 
-                if (SubscribersList[topicName].Contains(SubscribersList[topicName].First(x => x.Endpoint == subscriberEndPoint)))
+                if (SubscribersList[topicName].Contains(SubscribersList[topicName].First(x => x.SubscriptionId == SubscriptionId)))
                 {
-                    SubscribersList[topicName].Remove(SubscribersList[topicName].First(x => x.Endpoint == subscriberEndPoint));
+                    SubscribersList[topicName].Remove(SubscribersList[topicName].First(x => x.SubscriptionId == SubscriptionId));
                 }
             }
         }

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Dealer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Dealer" Height="350" Width="525">
     <Grid>
         <TextBlock Name="Block1" HorizontalAlignment="Left" Height="23" Margin="148,11,0,0" TextWrapping="Wrap" Text="Topic: Table 1" VerticalAlignment="Top" Width="78"/>
         <TextBlock Name="Block2" HorizontalAlignment="Left" Height="23" Margin="231,11,0,0" TextWrapping="Wrap" Text="Sub Topic: Sub Table 1" VerticalAlignment="Top" Width="118"/>

@@ -13,11 +13,13 @@ namespace PubSubServer
     public class PublisherService
     {
         private const int Port = 10002;
+        private static MessageService messageService;
 
         public void StartPublisherService()
         {
             var th = new Thread(HostPublisherService) {IsBackground = true};
             th.Start();
+            messageService = new MessageService();
         }
 
         private void HostPublisherService()
@@ -39,22 +41,31 @@ namespace PubSubServer
                     var recv = 0;
                     var data = new byte[1024];
                     recv = server.ReceiveFrom(data, ref remoteEp);
-                    var serializedMessage = Encoding.ASCII.GetString(data, 0, recv);
-                    var deserializedMessage = JsonConvert.DeserializeObject<Message>(serializedMessage);
+                    var deserializedMessage = JsonConvert.DeserializeObject<Message>(Encoding.ASCII.GetString(data, 0, recv));
 
-                    if (deserializedMessage.Command != Command.Publish) continue;
-                    if (string.IsNullOrEmpty(deserializedMessage.Topic)) continue;
+                    if (deserializedMessage.Header.Command != Command.Publish) continue;
+                    if (string.IsNullOrEmpty(deserializedMessage.Header.Topic)) continue;
 
-                    var subscriberListForThisTopic = Filter.GetSubscribers(deserializedMessage.Topic);
-                    var workerThreadParameters = new WorkerThreadParameters
+                    var subscriberListForThisTopic = Subscribers.GetSubscribers(deserializedMessage.Header.Topic);
+
+                    if (subscriberListForThisTopic == null) return;
+
+                    if (deserializedMessage.Content.SubscriptionId != null &&
+                        deserializedMessage.Header.PublishToSubscriptionId)
                     {
-                        Server = server,
-                        SerializedMessage = serializedMessage,
-                        SubscriberListForThisTopic = subscriberListForThisTopic,
-                        DeserializedMessage = deserializedMessage
-                    };
+                        var subscriber =
+                            subscriberListForThisTopic.Single(
+                                x => x.SubscriptionId == deserializedMessage.Content.SubscriptionId);
+                        PublishMessage(deserializedMessage, subscriber);
 
-                    ThreadPool.QueueUserWorkItem(Publish, workerThreadParameters);
+                    }
+                    else
+                    {
+                        foreach (var subscriber in subscriberListForThisTopic)
+                        {
+                            PublishMessage(deserializedMessage, subscriber);
+                        }
+                    }
                 }
                 catch
                 {
@@ -63,37 +74,15 @@ namespace PubSubServer
             }
         }
 
-        public static void Publish(object stateInfo)
+        private static void PublishMessage(Message message, SubscriberTuple subscriber)
         {
-            var workerThreadParameters = (WorkerThreadParameters) stateInfo;
-            var server = workerThreadParameters.Server;
-            var subscriberListForThisTopic = workerThreadParameters.SubscriberListForThisTopic;
-
-            if (subscriberListForThisTopic == null) return;
-
-            if (workerThreadParameters.DeserializedMessage.SubscriptionId != null && workerThreadParameters.DeserializedMessage.PublishToSubscriptionId)
-            {
-                var subscriber = subscriberListForThisTopic.Single(x => x.SubscriptionId == workerThreadParameters.DeserializedMessage.SubscriptionId);
-                PublishMessage(server, workerThreadParameters.SerializedMessage, subscriber);
-                return;
-            }
-
-            foreach (var subscriber in subscriberListForThisTopic)
-            {
-                PublishMessage(server, workerThreadParameters.SerializedMessage, subscriber);
-            }
-        }
-
-        private static void PublishMessage(Socket server, string serializedMessage, SubscriberTuple subscriber)
-        {
-            server.SendTo(Encoding.ASCII.GetBytes(serializedMessage), serializedMessage.Length, SocketFlags.None, subscriber.Endpoint);
+            messageService.AddItemToList(message, subscriber.Endpoint);
         }
     }
 
     internal class WorkerThreadParameters
     {
-        public Socket Server { get; set; }
-        public string SerializedMessage { get; set; }
+        public MessageService MessageService { get; set; }
         public Message DeserializedMessage { get; set; }
         public List<SubscriberTuple> SubscriberListForThisTopic { get; set; }
     }

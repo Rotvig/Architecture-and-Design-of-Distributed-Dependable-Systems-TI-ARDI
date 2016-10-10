@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Player"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Player" Height="350" Width="525">
     <Grid>
         <TextBox x:Name="topic" HorizontalAlignment="Left" Height="23" Margin="184,10,0,0" TextWrapping="Wrap" Text="Table 1" VerticalAlignment="Top" Width="120"/>
         <TextBlock HorizontalAlignment="Left" Height="23" Margin="148,11,0,0" TextWrapping="Wrap" Text="Topic" VerticalAlignment="Top" Width="31"/>
@@ -23,6 +23,7 @@
         <Button x:Name="btn_facedown" Content="Turn facedown Card" Margin="223,267,169,21" Click="btn_facedown_Click" IsEnabled="False" />
         <TextBlock HorizontalAlignment="Left" Height="23" Margin="377,110,0,0" TextWrapping="Wrap" Text="Total Value" VerticalAlignment="Top" Width="61"/>
         <ListBox x:Name="listBox" HorizontalAlignment="Left" Height="100" Margin="119,133,0,0" VerticalAlignment="Top" Width="208"/>
+        <TextBlock Name="StandText" HorizontalAlignment="Left" Height="23" Margin="377,210,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="107"/>
 
     </Grid>
 </Window>

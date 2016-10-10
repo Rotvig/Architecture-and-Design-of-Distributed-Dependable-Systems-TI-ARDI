@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -17,6 +18,7 @@ namespace Shared
         private bool isReceivingStarted;
         private const int Port = 10001;
         private string currentTopic;
+        private List<int> messageNumbersRecieved = new List<int>(); 
 
         public Subscriber()
         {
@@ -24,7 +26,7 @@ namespace Shared
             remoteEndPoint = new IPEndPoint(Utils.GetLocalIp4Address(), Port);
         }
 
-        public Guid? SubscriptionId { get; private set; }
+        public Guid SubscriptionId { get; private set; }
 
         public void Subscribe(string topic)
         {
@@ -38,9 +40,15 @@ namespace Shared
 
             var message = JsonConvert.SerializeObject(new Message
             {
-                Command = Command.Subscribe,
-                SubscriptionId = SubscriptionId,
-                Topic = currentTopic
+                Header = new MessageHeader
+                {
+                    Command = Command.Subscribe,
+                    Topic = currentTopic
+                },
+                Content = new MessageContent
+                {
+                    SubscriptionId = SubscriptionId
+                }
             });
 
             client.SendTo(Encoding.ASCII.GetBytes(message), remoteEndPoint);
@@ -62,13 +70,18 @@ namespace Shared
 
             var message = JsonConvert.SerializeObject(new Message
             {
-                Command = Command.Unsubscribe,
-                SubscriptionId = SubscriptionId,
-                Topic = currentTopic
+                Header = new MessageHeader
+                {
+                    Command = Command.Unsubscribe,
+                    Topic = currentTopic
+                },
+                Content = new MessageContent
+                {
+                    SubscriptionId = SubscriptionId
+                }
             });
 
             client.SendTo(Encoding.ASCII.GetBytes(message), remoteEndPoint);
-            SubscriptionId = null;
         }
 
         private void ReceiveDataFromServer()
@@ -78,11 +91,23 @@ namespace Shared
             {
                 recv = client.ReceiveFrom(data, ref publisherEndPoint);
                 var msg = Encoding.ASCII.GetString(data, 0, recv);
-                if (!string.IsNullOrEmpty(msg))
-                {
-                    NewMessage?.Invoke(this, new NewMessageEvent(JsonConvert.DeserializeObject<Message>(msg)));
-                }
+                if (string.IsNullOrEmpty(msg)) continue;
+
+                var message = JsonConvert.DeserializeObject<Message>(msg);
+                if (messageNumbersRecieved.Contains(message.Header.MessageNumber)) continue;
+
+                ReturnAck(message, publisherEndPoint);
+                messageNumbersRecieved.Add(message.Header.MessageNumber);
+
+                NewMessage?.Invoke(this, new NewMessageEvent(message));
             }
+        }
+
+        private void ReturnAck(Message message, EndPoint endPoint)
+        {
+            message.Header.Command = Command.Ack;
+            var serializedMessage = JsonConvert.SerializeObject(message);
+            client.SendTo((Encoding.ASCII.GetBytes(serializedMessage)), serializedMessage.Length ,SocketFlags.None, endPoint);
         }
 
         public class NewMessageEvent : EventArgs
