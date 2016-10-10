@@ -20,7 +20,6 @@ namespace Shared
 
         public void Publish(string topic, Event @event, EventData eventData = null, Guid? subscriptionId = null,  bool publishToSubscriptionId = false, TimeSpan? time = null)
         {
-            //DateTime? timeout = DateTime.Now.AddSeconds(1);
             DateTime? timeout =null;
             if (time.HasValue)
                 timeout = DateTime.Now.Add(TimeSpan.FromSeconds(time.Value.Seconds));
