@@ -27,11 +27,13 @@ In addition to describing the Client and server a small description of the publi
 
 \myFigure{PubSub_class}{Publish/subscribe server class diagram }{fig:pubSub_class}{1}
 
-In figure \ref{fig:pubSub_class} the structure is shown. It consists of a PublisherService, a SubscriberService and a Filter class. The PublisherService listens for Publishers that wants to publish messages. When a message is received it checks whether its a publish message, and if it is it publishes the message subscribes based on the topic. If the message is not a publish message it is discarded by the PublisherService
+In figure \ref{fig:pubSub_class} the structure is shown. It consists of a PublisherService, SubscriberService, Subscribers, MessageService and a ConcurrentList class. The PublisherService listens for Publishers that wants to publish messages. When a message is received it checks whether it is a publish message, and publishes the message to subscribers based on the topic. If the message is not a publish message it is discarded by the PublisherService
 
-Message about clients who wants to subscribe or unsubscribe are handled by the SubscriberService that are listening for these types of messages and handling them. It will add  or remove subscribers to a dictionary. This dictionary is handled by the Filter class.
+Message about clients who wants to subscribe or unsubscribe are handled by the SubscriberService which is listening for these types of messages and handles them. It will add  or remove subscribers to a dictionary. This dictionary is handled by the Subscribers class.
 
-The Filter class provides an implementation of the dictionary that holds the subscribers endpoint and which topics they are interested in. Through the Filter class the subscriber can easily add and remove subscribers while the publisher can easily locate subscribers relevant for a topic.
+The Subscribers class provides an implementation of the dictionary that holds the subscribers endpoint and which topics they are interested in. Through the Subscribers class the subscriber can easily add and remove subscribers while the publisher can easily locate subscribers relevant for a topic. This class also handles the element of concurrency and introduces a lock.
+
+MessageService ensures the time decoupling. It places messages on a implemented queue called concurrentList. The queue is custom implemented to handle concurrency. If a message can not be published to a subscriber at a given time it will save the message on the queue and publish the message at a later time and the subscriber will then receive it when it is online again. Some messages includes timeouts - for example the dealer allows a window of 10 seconds to receive bets. If the 10 seconds has passed the subscriber will not receive the message when it comes back online because it is not relevant anymore.
 \FloatBarrier
 
 \section{Design and implementation of client}
