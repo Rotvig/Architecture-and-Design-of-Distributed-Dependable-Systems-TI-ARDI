@@ -69,6 +69,7 @@ namespace Dealer
             publisher.Publish(
                 Utils.TablePublishTopic,
                 Event.Hit,
+                null,
                 new EventData
                 {
                     Cards = new List<Card> {currentDeck.Dequeue()}
@@ -94,7 +95,7 @@ namespace Dealer
             currentDeck = DeckFactory.CreateDeck().Shuffle();
             button.IsEnabled = false;
 
-            publisher.Publish(Utils.TablePublishTopic, Event.GameStart, null, null, false, TimeSpan.FromSeconds(10));
+            publisher.Publish(Utils.TablePublishTopic, Event.GameStart, TimeSpan.FromSeconds(10));
             Task.Factory.StartNew(() =>
             {
                 Thread.Sleep(Utils.Timeout+1000);
@@ -112,6 +113,7 @@ namespace Dealer
             listBox.Items.Add(currentDealerCards.First().CardName);
             listBox.Items.Add("Facedown");
             totalVal.Text = currentDealerCards.First().Value.ToString();
+            var timeSpan = TimeSpan.FromSeconds(30);
 
             foreach (var player in players)
             {
@@ -122,6 +124,7 @@ namespace Dealer
                 publisher.Publish(
                     Utils.TablePublishTopic,
                     Event.HandoutCards,
+                    timeSpan,
                     new EventData
                     {
                         Cards = cards
@@ -129,6 +132,15 @@ namespace Dealer
                     player.SubscriptionId,
                     true);
             }
+
+            Task.Factory.StartNew(() =>
+            {
+                Thread.Sleep(timeSpan);
+                if (players.All(x => x.Status != Status.Playing)) return;
+                //Remove all players who hasent answered back
+                players.RemoveAll(x => x.Status == Status.Playing);
+                Dispatcher.Invoke(TryFinishGame);
+            });
         }
 
         private void TryFinishGame()
@@ -154,6 +166,7 @@ namespace Dealer
 
                     publisher.Publish(Utils.TablePublishTopic,
                         Event.GamerOver,
+                        null,
                         new EventData
                         {
                             Win = true,
@@ -166,6 +179,7 @@ namespace Dealer
                 {
                     publisher.Publish(Utils.TablePublishTopic,
                         Event.GamerOver,
+                        null,
                         new EventData
                         {
                             Win = false

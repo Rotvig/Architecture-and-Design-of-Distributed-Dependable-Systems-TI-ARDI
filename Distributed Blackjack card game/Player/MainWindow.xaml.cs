@@ -81,7 +81,7 @@ namespace Player
                 totalVal.Text = _value.ToString();
                 if (_value > 21)
                 {
-                    publisher.Publish("Sub " + topic.Text.Trim(), Event.Bust, null, subscriber.SubscriptionId);
+                    publisher.Publish("Sub " + topic.Text.Trim(), Event.Bust, null, null, subscriber.SubscriptionId);
                     totalVal.Text = "Bust";
                     btn_stand.IsEnabled = false;
                     btn_hit.IsEnabled = false;
@@ -142,6 +142,7 @@ namespace Player
         {
             btn_bet.IsEnabled = false;
             publisher.Publish("Sub " + topic.Text.Trim(), Event.Bet,
+                null,
                 new EventData
                 {
                     Bet = int.Parse(BetTextBox.Text)
@@ -152,7 +153,7 @@ namespace Player
 
         private void btn_hit_Click(object sender, RoutedEventArgs e)
         {
-            publisher.Publish("Sub " + topic.Text.Trim(), Event.Hit, null, subscriber.SubscriptionId);
+            publisher.Publish("Sub " + topic.Text.Trim(), Event.Hit, null, null, subscriber.SubscriptionId);
             btn_bet.IsEnabled = false;
         }
 
@@ -160,7 +161,9 @@ namespace Player
         {
             publisher.Publish(
                 "Sub " + topic.Text.Trim(),
-                Event.Stand, new EventData
+                Event.Stand,
+                null, 
+                new EventData
                 {
                     value = _value
                 },

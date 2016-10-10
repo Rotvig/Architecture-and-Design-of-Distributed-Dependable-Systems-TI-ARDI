@@ -18,7 +18,7 @@ namespace Shared
             remoteEndPoint = new IPEndPoint(Utils.GetLocalIp4Address(), Port);
         }
 
-        public void Publish(string topic, Event @event, EventData eventData = null, Guid? subscriptionId = null,  bool publishToSubscriptionId = false, TimeSpan? time = null)
+        public void Publish(string topic, Event @event, TimeSpan? time = null, EventData eventData = null,  Guid? subscriptionId = null, bool publishToSubscriptionId = false)
         {
             DateTime? timeout =null;
             if (time.HasValue)
