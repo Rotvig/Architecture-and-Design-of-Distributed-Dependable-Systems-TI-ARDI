@@ -2,13 +2,13 @@
 This chapter will explain and discuss the chosen solution for implementing the system described in chapter \ref{chp:intro}
 
 \section{Discussion of architecture decisions}
-The architecture is based on the publish/subscribe pattern. As shown in figure \ref{fig:basicArc} the dealer and players are decoupled with a publish/subscribe server. This decouples the clients and server in both time, space and flow. By decoupling in space the participants do not need to know each and it is therefore easier to replace a client or server implementation. Decoupling clients and servers in flow will ensure that they do not block each other. Decoupling time will ensure that the participants do not need to be online at the same time. It is relevant to note that the time decoupling is difficult in a game scenario as multiple players will be forced to wait for a client. A specific game relevant time decoupling is therefore implemented in this solution.
+The architecture is based on the publish/subscribe pattern. As shown in figure \ref{fig:basicArc} the dealer and players are decoupled with a publish/subscribe server. This decouples the clients and server in both time, space and flow. By decoupling in space the participants do not need to know each other and it is therefore easier to replace a client or server implementation. Decoupling clients and servers in flow will ensure that they do not block each other. Decoupling time will ensure that the participants do not need to be online at the same time. It is relevant to note that the time decoupling is difficult in a game scenario as multiple players will be forced to wait for a client. A specific game relevant time decoupling is therefore implemented in this solution.
 
 \myFigure{basicArc}{System Architecture}{fig:basicArc}{0.8}
 
 The publish/subscribe pattern will in this solution be implemented as topic-based. This approach allows the possibility of easily dividing different blackjack tables in different topics. The topics will in this project use URL like strings.
 
-Other patterns could also have been used in the solution. For example the Acceptor/Connector pattern could have been used for decoupling initialization of connection and the concrete service handling. This would have ensured that a new initialization strategy could easilere have been implemented as it would have been decoupled from the actual processing. Also the leader/follower pattern could have been implemented to execute each publish message but a simple ThreadPool which works similar to the leader/follower pattern is chosen for programming simplicity. Other patterns could therefore have been used and the overall design would have benefited from it.
+Other patterns could also have been used in the solution. For example the Acceptor/Connector pattern could have been used for decoupling initialization of connection and the concrete service handling. This would have ensured that a new initialization strategy could more easily have been implemented as it would have been decoupled from the actual processing. Also the leader/follower pattern could have been implemented to execute each publish message but a simple ThreadPool which works similar to the leader/follower pattern is chosen for programming simplicity. Other patterns could therefore have been used and the overall design would have benefited from it.
 
 This solution is though focused on the publish/subscribe pattern to drive the architecture and ensure a high degree of decoupling in both time, flow and space. 
 
@@ -17,7 +17,7 @@ The dealer, publish/subscribe server and players will all be deployed on differe
 
 \myFigure{Deployment}{Deployment diagram }{fig:deploy}{1}
 
-UDP is chosen as transport protocol because it is connectionless and faster than TCP. Also it allows for simple multicasting as multiple connection does not need to be setup up for each message being sent.
+UDP is chosen as transport protocol because it is connectionless and faster than TCP. Also it allows for simple multicasting as multiple connection does not need to be setup for each message being sent.
 
 \section{Design and implementation}
 The software is divided into four different projects: Dealer, Player, PubSubServer and Shared. The Shared project contains classes used by both the Dealer and Player. By using a shared project no code is copied and the game logic and publish/subscribe mechanism needed by both Player and Dealer can be placed in this project.
@@ -27,19 +27,30 @@ In addition to describing the Client and server a small description of the publi
 
 \myFigure{PubSub_class}{Publish/subscribe server class diagram }{fig:pubSub_class}{1}
 
-In figure \ref{fig:pubSub_class} the structure is shown. It consists of a PublisherService, SubscriberService, Subscribers, MessageService and a ConcurrentList class. The PublisherService listens for Publishers that wants to publish messages. When a message is received it checks whether it is a publish message, and publishes the message to subscribers based on the topic. If the message is not a publish message it is discarded by the PublisherService
+In figure \ref{fig:pubSub_class} the structure is shown. It consists of a PublisherService, SubscriberService, Subscribers, MessageService and a ConcurrentList class. The PublisherService listens for Publishers that wants to publish messages. When a message is received it checks whether it is a publish message, and publishes the message to subscribers based on the topic. If the message is not a publish message it is discarded by the PublisherService.
 
-Message about clients who wants to subscribe or unsubscribe are handled by the SubscriberService which is listening for these types of messages and handles them. It will add  or remove subscribers to a dictionary. This dictionary is handled by the Subscribers class.
+Message about clients who want to subscribe or unsubscribe are handled by the SubscriberService which is listening for these types of messages and handles them. It will add  or remove subscribers to a dictionary. This dictionary is handled by the Subscribers class.
 
 The Subscribers class provides an implementation of the dictionary that holds the subscribers endpoint and which topics they are interested in. Through the Subscribers class the subscriber can easily add and remove subscribers while the publisher can easily locate subscribers relevant for a topic. This class also handles the element of concurrency and introduces a lock.
 
-MessageService ensures the time decoupling. It places messages on a implemented queue called concurrentList. The queue is custom implemented to handle concurrency. If a message can not be published to a subscriber at a given time it will save the message on the queue and publish the message at a later time and the subscriber will then receive it when it is online again. Some messages includes timeouts - for example the dealer allows a window of 10 seconds to receive bets. If the 10 seconds has passed the subscriber will not receive the message when it comes back online because it is not relevant anymore.
+MessageService ensures the time decoupling. It places messages on an implemented queue called concurrentList. The queue is custom implemented to handle concurrency. If a message can not be published to a subscriber at a given time it will save the message on the queue and publish the message at a later time and the subscriber will then receive it when it is online again. Some messages includes timeouts - for example the dealer allows a window of 10 seconds to receive bets. If the 10 seconds has passed the subscriber will not receive the message when it comes back online because it is not relevant anymore.
 \FloatBarrier
 
 \section{Design and implementation of client}
 The client in this context is the Player. The Player furthermore uses classes from the Shared project and communicates with the publish subscribe server. The Player subscribes to a specific table.
 
+\myFigure{client_gui}{2 players graphical user interface }{fig:client_gui}{1}
+
+The implemented client is shown in figure \ref{fig:client_gui}. Here two different players are running. A player can bet money when a game is started by the dealer and can also see the dealed cards. When a game is running the players can \emph{turn facedown card}, ask the dealer to \emph{hit me} and \emph{stand}. The figure shows a game that has finished and the one player got a \emph{bust} while the other chose to stand on 17.
+\FloatBarrier
+
+
 \subsection{Class diagram}
+The clients graphical user interface is developed in WPF. This is the MainView. Here the user can bet, see the dealed cards and choose to stand, ask for more cards. 
+
+The MainView uses the Publisher and Subscriber which is in the Shared project. As they are used by both the client and server. Through the Publisher class the MainView can publish messages based on the users action. For example if the user places a bet a message would be published. The MainView also subscribes to a specific table and receives messages from the dealer. This could for example be the dealed cards.
+
+The Util class is used by the client to get its own IP adress. This method is also used by both client and server.
 
 \myFigure{client_class}{Client class diagram }{fig:client_class}{1}
 \FloatBarrier
@@ -47,7 +58,15 @@ The client in this context is the Player. The Player furthermore uses classes fr
 \section{Design and implementation of server}
 The server in this context is the Dealer. The Dealer furthermore uses classes from the Shared project and communicates with the publish subscribe server.
 
+The graphical user interface of the server is shown in figure \ref{fig:server_gui}. The dealer can start a new game when players have joined the table. The dealer can also see its own cards and total value of these cards.  
+
+\myFigure{server_gui}{A dealers graphical user interface }{fig:server_gui}{0.5}
+\FloatBarrier
+
 \subsection{Class diagram}
+The servers graphical user interface is developed with WPF. This is called the MainView. Through the MainView the dealer can start a new game and see the dealers card. The dealer uses the Utils class to shuffle the cards. 
+
+The dealer uses the publisher class to for example publish the cards to the players. The dealer furthermore subscribes on for example bets coming from the players.
 
 \myFigure{server_class}{Server class diagram }{fig:server_class}{1}
 \FloatBarrier
