@@ -40,6 +40,11 @@ MessageService ensures the time decoupling. It places messages on a implemented 
 The client in this context is the Player. The Player furthermore uses classes from the Shared project and communicates with the publish subscribe server. The Player subscribes to a specific table.
 
 \subsection{Class diagram}
+The client has a graphical user interface created with WPF. This is the MainView. Here the user can bet, see the dealed cards and choose to stand, ask for more cards. 
+
+The MainView uses the Publisher and Subscriber which is in the Shared project. As they are used by both the client and server. Through the Publisher class the MainView can publish messages based on the users action. For example if the user places a bet a message would be published. The MainView also subscribes to a specific table and receives messages from the dealer. This could for example be the dealed cards.
+
+The Util class is used by the client to get its own IP adress. This method is also used by both client and server.
 
 \myFigure{client_class}{Client class diagram }{fig:client_class}{1}
 \FloatBarrier
@@ -48,6 +53,9 @@ The client in this context is the Player. The Player furthermore uses classes fr
 The server in this context is the Dealer. The Dealer furthermore uses classes from the Shared project and communicates with the publish subscribe server.
 
 \subsection{Class diagram}
+The server also has a graphical user interface created with WPF. This is called the MainView. Through the MainView the dealer can start a new game and see the dealers card. The dealer uses the Utils class to shuffle the cards. 
+
+The dealer uses the publisher class to for example publish the cards to the players. The dealer furthermore subscribes on for example bets coming from the players.
 
 \myFigure{server_class}{Server class diagram }{fig:server_class}{1}
 \FloatBarrier
