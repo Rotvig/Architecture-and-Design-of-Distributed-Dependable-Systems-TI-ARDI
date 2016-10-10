@@ -29,9 +29,9 @@ namespace Dealer
             subscriber.NewMessage += (sender, @event) => Dispatcher.Invoke(() => NewMessage(@event.Message));
         }
 
-        private void NewMessage(MessageContent message)
+        private void NewMessage(Message message)
         {
-            switch (message.Event)
+            switch (message.Content.Event)
             {
                 case Event.Bet:
                     AddPlayer(message);
@@ -50,21 +50,21 @@ namespace Dealer
             }
         }
 
-        private void PlayerBust(MessageContent message)
+        private void PlayerBust(Message message)
         {
-            players.Single(x => x.SubscriptionId == message.SubscriptionId.Value).Status = Status.Bust;
+            players.Single(x => x.SubscriptionId == message.Content.SubscriptionId.Value).Status = Status.Bust;
             TryFinishGame();
         }
 
-        private void PlayerStands(MessageContent message)
+        private void PlayerStands(Message message)
         {
-            var player = players.Single(x => x.SubscriptionId == message.SubscriptionId.Value);
+            var player = players.Single(x => x.SubscriptionId == message.Content.SubscriptionId.Value);
             player.Status = Status.Stands;
-            player.value = message.EventData.value;
+            player.value = message.Content.EventData.value;
             TryFinishGame();
         }
 
-        private void PlayerHits(MessageContent message)
+        private void PlayerHits(Message message)
         {
             publisher.Publish(
                 Utils.TablePublishTopic,
@@ -73,17 +73,17 @@ namespace Dealer
                 {
                     Cards = new List<Card> {currentDeck.Dequeue()}
                 },
-                message.SubscriptionId,
+                message.Content.SubscriptionId,
                 true
                 );
         }
 
-        private void AddPlayer(MessageContent message)
+        private void AddPlayer(Message message)
         {
             players.Add(new Player
             {
-                SubscriptionId = message.SubscriptionId.Value,
-                Bet = message.EventData.Bet
+                SubscriptionId = message.Content.SubscriptionId.Value,
+                Bet = message.Content.EventData.Bet
             });
         }
 

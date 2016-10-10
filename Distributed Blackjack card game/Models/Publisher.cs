@@ -28,7 +28,7 @@ namespace Shared
                         Command = Command.Publish,
                         Topic = topic,
                         PublishToSubscriptionId = publishToSubscriptionId,
-                        Timeout = DateTime.Now.Add(TimeSpan.FromSeconds(2))
+                        Timeout = DateTime.Now.Add(TimeSpan.FromSeconds(10))
                     },
                     Content = new MessageContent
                     {

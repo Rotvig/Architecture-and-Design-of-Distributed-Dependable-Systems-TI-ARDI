@@ -29,24 +29,24 @@ namespace Player
             timer.Tick += timer_Tick;
         }
 
-        private void NewMessage(MessageContent message)
+        private void NewMessage(Message message)
         {
-            switch (message.Event)
+            switch (message.Content.Event)
             {
                 case Event.GameStart:
-                    time = TimeSpan.FromMilliseconds(Utils.Timeout);
+                    time =  TimeSpan.FromSeconds((message.Header.Timeout.Value - DateTime.Now).Seconds);
                     timer.Start();
                     btn_bet.IsEnabled = true;
                     lblTime.Text = time.ToString();
                     break;
                 case Event.Hit:
-                    RecieveCard(message);
+                    RecieveCard(message.Content);
                     break;
                 case Event.HandoutCards:
-                    CardsHandout(message);
+                    CardsHandout(message.Content);
                     break;
                 case Event.GamerOver:
-                    GameOver(message);
+                    GameOver(message.Content);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

@@ -99,7 +99,7 @@ namespace Shared
                 ReturnAck(message, publisherEndPoint);
                 messageNumbersRecieved.Add(message.Header.MessageNumber);
 
-                NewMessage?.Invoke(this, new NewMessageEvent(message.Content));
+                NewMessage?.Invoke(this, new NewMessageEvent(message));
             }
         }
 
@@ -112,9 +112,9 @@ namespace Shared
 
         public class NewMessageEvent : EventArgs
         {
-            public MessageContent Message { get; set; }
+            public Message Message { get; set; }
 
-            public NewMessageEvent(MessageContent message)
+            public NewMessageEvent(Message message)
             {
                 Message = message;
             }
