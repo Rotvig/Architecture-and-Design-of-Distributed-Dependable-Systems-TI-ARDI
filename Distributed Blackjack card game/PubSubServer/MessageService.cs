@@ -81,7 +81,11 @@ namespace PubSubServer
                 if ((item.Message.Header.Timeout == null && item.Message.Header.PublishTries > 0)
                     || item.Message.Header.Timeout.HasValue && item.Message.Header.Timeout <= DateTime.Now)
                 {
-                    Filter.RemoveSubscriber(item.Message.Header.Topic, item.EndPoint);
+                    if (item.Message.Content.SubscriptionId.HasValue)
+                    {
+                        Filter.RemoveSubscriber(item.Message.Header.Topic, item.Message.Content.SubscriptionId.Value);
+                    }
+
                     continue;
                 }
 

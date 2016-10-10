@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,6 +16,7 @@ namespace Player
         private readonly DispatcherTimer timer;
         private TimeSpan time;
         private List<Card> cards;
+        private int _value;
 
         public MainWindow()
         {
@@ -23,7 +25,7 @@ namespace Player
             subscriber = new Subscriber();
             subscriber.NewMessage += (sender, @event) => Dispatcher.Invoke(() => NewMessage(@event.Message));
             publisher = new Publisher();
-            timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
+            timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             timer.Tick += timer_Tick;
         }
 
@@ -56,17 +58,37 @@ namespace Player
             var card = message.EventData.Cards.Single();
             cards.Add(card);
             listBox.Items.Add(card.CardName);
-            totalVal.Text = cards.Sum(x => x.Value).ToString();
-            var value = cards.Sum(x => x.Value);
 
-            if (value > 21)
+            CheckIfBust();
+        }
+
+        private void CheckIfBust()
+        {
+            _value = cards.Sum(x =>x.Facedown ? 0 : x.Flipped? x.SecondaryValue : x.Value);
+
+            if (_value > 21)
             {
-                publisher.Publish("Sub " + topic.Text.Trim(), Event.Bust, null, subscriber.SubscriptionId);
-                totalVal.Text = "Bust";
+                foreach (var card1 in cards)
+                {
+                    if (card1.SecondaryValue > 0 && !card1.Flipped)
+                    {
+                        card1.Flipped = true;
+                        _value = cards.Sum(x => x.Facedown ? 0 : x.Flipped ? x.SecondaryValue : x.Value);
+                        if (_value <= 21)
+                        break;
+                    }
+                }
+                totalVal.Text = _value.ToString();
+                if (_value > 21)
+                {
+                    publisher.Publish("Sub " + topic.Text.Trim(), Event.Bust, null, subscriber.SubscriptionId);
+                    totalVal.Text = "Bust";
+                }
+                
             }
             else
             {
-                totalVal.Text = value.ToString();
+                totalVal.Text = _value.ToString();
             }
         }
 
@@ -97,39 +119,20 @@ namespace Player
             btn_facedown.IsEnabled = true;
             btn_stand.IsEnabled = true;
 
-            /*
-            if (cards.All(x => x.SecondaryValue == 0)) return;
-
-            // MessageBox.Show("You have picked an ace", "Should i count for 1 or 11?",)
-
-            MessageBoxManager.Yes = "11";
-            MessageBoxManager.No = "1";
-            MessageBoxManager.Register();
-
-            //DialogResult dialogResult = MessageBox.Show("An important decision!", "You have picked an ace. Which value should count as?", MessageBoxButton.YesNo);
-            //if (dialogResult == DialogResult.Yes)
-            //{
-            //    //do something
-            //}
-            //else if (dialogResult == DialogResult.No)
-            //{
-            //    //do something else
-            //}
-            */
         }
 
         private void btn_sub_Click(object sender, RoutedEventArgs e)
         {
             subscriber.Subscribe(topic.Text.Trim());
 
-            ((Button) sender).Visibility = Visibility.Collapsed;
+            ((Button)sender).Visibility = Visibility.Collapsed;
             btn_unsub.Visibility = Visibility.Visible;
         }
 
         private void btn_unsub_Click(object sender, RoutedEventArgs e)
         {
             subscriber.Unsubscribe();
-            ((Button) sender).Visibility = Visibility.Collapsed;
+            ((Button)sender).Visibility = Visibility.Collapsed;
             btn_sub.Visibility = Visibility.Visible;
         }
 
@@ -157,7 +160,7 @@ namespace Player
                 "Sub " + topic.Text.Trim(),
                 Event.Stand, new EventData
                 {
-                    Cards = cards
+                    value = _value
                 },
                 subscriber.SubscriptionId);
         }
@@ -179,15 +182,9 @@ namespace Player
             card.Facedown = false;
             listBox.Items.Remove("Facedown");
             listBox.Items.Add(card.CardName);
-            var value = cards.Sum(x => x.Value);
 
-            if (value > 21)
-            {
-                publisher.Publish("Sub " + topic.Text.Trim(), Event.Bust, null, subscriber.SubscriptionId);
-                return;
-            }
+            CheckIfBust();
 
-            totalVal.Text = value.ToString();
             btn_facedown.IsEnabled = false;
             btn_hit.IsEnabled = true;
         }

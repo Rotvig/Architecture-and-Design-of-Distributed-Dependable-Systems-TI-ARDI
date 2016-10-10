@@ -60,7 +60,7 @@ namespace Dealer
         {
             var player = players.Single(x => x.SubscriptionId == message.SubscriptionId.Value);
             player.Status = Status.Stands;
-            player.Cards = message.EventData.Cards;
+            player.value = message.EventData.value;
             TryFinishGame();
         }
 
@@ -142,7 +142,7 @@ namespace Dealer
             {
                 if (player.Status == Status.Stands && 
                     !dealerValue.HasValue ||
-                    (dealerValue.HasValue && player.Cards.Where(x => x.Facedown == false).Sum(x => x.Value) >= dealerValue))
+                    (dealerValue.HasValue && player.value >= dealerValue))
                 {
                     var prizeMoney = player.Bet;
 
