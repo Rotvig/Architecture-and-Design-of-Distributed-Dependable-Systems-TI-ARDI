@@ -83,6 +83,8 @@ namespace Player
                 {
                     publisher.Publish("Sub " + topic.Text.Trim(), Event.Bust, null, subscriber.SubscriptionId);
                     totalVal.Text = "Bust";
+                    btn_stand.IsEnabled = false;
+                    btn_hit.IsEnabled = false;
                 }
                 
             }
@@ -163,6 +165,9 @@ namespace Player
                     value = _value
                 },
                 subscriber.SubscriptionId);
+            StandText.Text = "Good luck!";
+            btn_stand.IsEnabled = false;
+            btn_hit.IsEnabled = false;
         }
 
         private void timer_Tick(object sender, EventArgs e)

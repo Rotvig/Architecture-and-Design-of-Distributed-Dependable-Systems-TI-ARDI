@@ -18,8 +18,11 @@ namespace Shared
             remoteEndPoint = new IPEndPoint(Utils.GetLocalIp4Address(), Port);
         }
 
-        public void Publish(string topic, Event @event, EventData eventData = null, Guid? subscriptionId = null,  bool publishToSubscriptionId = false)
+        public void Publish(string topic, Event @event, EventData eventData = null, Guid? subscriptionId = null,  bool publishToSubscriptionId = false, TimeSpan? time = null)
         {
+            DateTime? timeout = DateTime.Now.AddSeconds(1);
+            if (time.HasValue)
+                timeout = DateTime.Now.Add(TimeSpan.FromSeconds(time.Value.Seconds));
             client.SendTo(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(
                 new Message
                 {
@@ -28,7 +31,7 @@ namespace Shared
                         Command = Command.Publish,
                         Topic = topic,
                         PublishToSubscriptionId = publishToSubscriptionId,
-                        Timeout = DateTime.Now.Add(TimeSpan.FromSeconds(10))
+                        Timeout = timeout
                     },
                     Content = new MessageContent
                     {

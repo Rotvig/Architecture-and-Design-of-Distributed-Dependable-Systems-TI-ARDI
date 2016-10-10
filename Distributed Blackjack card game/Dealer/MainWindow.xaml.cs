@@ -94,7 +94,7 @@ namespace Dealer
             currentDeck = DeckFactory.CreateDeck().Shuffle();
             button.IsEnabled = false;
 
-            publisher.Publish(Utils.TablePublishTopic, Event.GameStart);
+            publisher.Publish(Utils.TablePublishTopic, Event.GameStart, null, null, false, TimeSpan.FromSeconds(10));
             Task.Factory.StartNew(() =>
             {
                 Thread.Sleep(Utils.Timeout+1000);
