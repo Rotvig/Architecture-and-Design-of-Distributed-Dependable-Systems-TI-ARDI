@@ -47,14 +47,25 @@ namespace PubSubServer
                     if (string.IsNullOrEmpty(deserializedMessage.Header.Topic)) continue;
 
                     var subscriberListForThisTopic = Subscribers.GetSubscribers(deserializedMessage.Header.Topic);
-                    var workerThreadParameters = new WorkerThreadParameters
-                    {
-                        MessageService = messageService,
-                        SubscriberListForThisTopic = subscriberListForThisTopic,
-                        DeserializedMessage = deserializedMessage
-                    };
 
-                    ThreadPool.QueueUserWorkItem(Publish, workerThreadParameters);
+                    if (subscriberListForThisTopic == null) return;
+
+                    if (deserializedMessage.Content.SubscriptionId != null &&
+                        deserializedMessage.Header.PublishToSubscriptionId)
+                    {
+                        var subscriber =
+                            subscriberListForThisTopic.Single(
+                                x => x.SubscriptionId == deserializedMessage.Content.SubscriptionId);
+                        PublishMessage(deserializedMessage, subscriber);
+
+                    }
+                    else
+                    {
+                        foreach (var subscriber in subscriberListForThisTopic)
+                        {
+                            PublishMessage(deserializedMessage, subscriber);
+                        }
+                    }
                 }
                 catch
                 {
@@ -63,29 +74,9 @@ namespace PubSubServer
             }
         }
 
-        public static void Publish(object stateInfo)
+        private static void PublishMessage(Message message, SubscriberTuple subscriber)
         {
-            var workerThreadParameters = (WorkerThreadParameters) stateInfo;
-            var subscriberListForThisTopic = workerThreadParameters.SubscriberListForThisTopic;
-
-            if (subscriberListForThisTopic == null) return;
-
-            if (workerThreadParameters.DeserializedMessage.Content.SubscriptionId != null && workerThreadParameters.DeserializedMessage.Header.PublishToSubscriptionId)
-            {
-                var subscriber = subscriberListForThisTopic.Single(x => x.SubscriptionId == workerThreadParameters.DeserializedMessage.Content.SubscriptionId);
-                PublishMessage(workerThreadParameters.MessageService, workerThreadParameters.DeserializedMessage, subscriber);
-                return;
-            }
-
-            foreach (var subscriber in subscriberListForThisTopic)
-            {
-                PublishMessage(workerThreadParameters.MessageService, workerThreadParameters.DeserializedMessage, subscriber);
-            }
-        }
-
-        private static void PublishMessage(MessageService service, Message message, SubscriberTuple subscriber)
-        {
-            service.AddItemToList(message, subscriber.Endpoint);
+            messageService.AddItemToList(message, subscriber.Endpoint);
         }
     }
 
