@@ -36,7 +36,7 @@ namespace PubSubServer
         {
             lock (Lock)
             {
-                return list.Remove(list.Single(x => x.Message.Header.MessageNumber == messageNumber));
+                return list.Remove(list.First(x => x.Message.Header.MessageNumber == messageNumber));
             }
         }
     }

@@ -39,10 +39,10 @@ namespace PubSubServer
                 switch (message.Header.Command)
                 {
                     case Command.Subscribe:
-                        Filter.AddSubscriber(message.Header.Topic, message.Content.SubscriptionId.Value, remoteEp);
+                        Subscribers.AddSubscriber(message.Header.Topic, message.Content.SubscriptionId.Value, remoteEp);
                         break;
                     case Command.Unsubscribe:
-                        Filter.RemoveSubscriber(message.Header.Topic, message.Content.SubscriptionId.Value);
+                        Subscribers.RemoveSubscriber(message.Header.Topic, message.Content.SubscriptionId.Value);
                         break;
                 }
             }

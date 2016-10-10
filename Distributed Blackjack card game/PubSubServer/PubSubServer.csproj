@@ -60,7 +60,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ConcurrentList.cs" />
-    <Compile Include="Filter.cs" />
+    <Compile Include="Subscribers.cs" />
     <Compile Include="MessageService.cs" />
     <Compile Include="PublisherService.cs" />
     <Compile Include="SubscriberService.cs" />

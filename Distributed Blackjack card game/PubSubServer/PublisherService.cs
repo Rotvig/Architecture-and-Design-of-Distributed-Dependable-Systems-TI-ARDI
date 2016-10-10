@@ -46,7 +46,7 @@ namespace PubSubServer
                     if (deserializedMessage.Header.Command != Command.Publish) continue;
                     if (string.IsNullOrEmpty(deserializedMessage.Header.Topic)) continue;
 
-                    var subscriberListForThisTopic = Filter.GetSubscribers(deserializedMessage.Header.Topic);
+                    var subscriberListForThisTopic = Subscribers.GetSubscribers(deserializedMessage.Header.Topic);
                     var workerThreadParameters = new WorkerThreadParameters
                     {
                         MessageService = messageService,
