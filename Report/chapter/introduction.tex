@@ -27,7 +27,9 @@ One of the cards that the player gets from the dealer is face up and it is the s
 
 \section{Patterns used in the solution}
 \label{chp:patterns}
-The publisher/subscriber pattern has been chosen for this project. The pattern is a widely used message passing pattern, for communication in a distributed system. The pattern is used to decouple entities in an application. Three different types of decoupling can be achieved: \emph{space decoupling}, \emph{Time decoupling} and \emph{flow decoupling}. The publish/subscriber pattern decouples in all three.
+The publisher/subscriber pattern has been chosen for this project. The pattern is a widely used message passing pattern, for communication in a distributed system. The pattern is used to decouple entities in an application. Three different types of decoupling can be achieved: \emph{space decoupling}, \emph{Time decoupling} and \emph{flow decoupling}. The publish/subscriber pattern decouples in all three. 
+
+A message queue will be used to ensure time decoupling this will be elaborated in section \ref{sec:time}.
 
 \subsection{Space decoupling}
 Space decoupling describes when the publishers and the subscribers does not know about each other. In publisher/subscribe pattern the two are decoupled in space by using an event service. The event service will then mediate the messages between the publisher and the subscriber so that the two do not need to know each other. The subscriber will just subscribe to specific content through the event service and the publisher will publish messages to the event service. In figure \ref{fig:space} the principle is shown
@@ -35,7 +37,8 @@ Space decoupling describes when the publishers and the subscribers does not know
 \myFigure{space}{Space decoupling}{fig:space}{0.8}
 
 \subsection{Time decoupling}
-The publisher/subscriber pattern is also time decoupled. As shown in the upper part of figure \ref{fig:time} the publisher can publish content to the event service while the subscriber is disconnected. In the lower part of figure \ref{fig:time}, the subscriber later on receives the content it has subscribed for, even though the publisher is disconnected at this very moment.
+\label{sec:time}
+The publisher/subscriber pattern is also time decoupled. As shown in the upper part of figure \ref{fig:time} the publisher can publish content to the event service while the subscriber is disconnected. In the lower part of figure \ref{fig:time}, the subscriber later on receives the content it has subscribed for, even though the publisher is disconnected at this very moment. To ensure time decoupling a message queue will be used on the Event Service. If the subscriber of a topic is offline the message will be stored in the message queue until the subscriber becomes available again. When the subscriber is available again the subscriber will receive the message.
 
 \myFigure{time}{Time decoupling}{fig:time}{0.8}
 \FloatBarrier
