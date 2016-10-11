@@ -55,6 +55,18 @@ The Util class is used by the client to get its own IP adress. This method is al
 \myFigure{client_class}{Client class diagram }{fig:client_class}{1}
 \FloatBarrier
 
+\subsection{Sequence diagram}
+The behavior of the client is described in figure \ref{fig:client_sq}. The diagram has four objects: \emph{MainVindow}, \emph{Publisher} and \emph{subscriber}. The \emph{PubSubServer} is added as an entity in the diagram to describe the context better. The \emph{Publisher}, \emph{Subscriber} and \emph{PubSubServer} communicates through sockets. The Subscriber runs in its own thread to asyncronously send ACKs to the PubSubServer. The ACKs are used for the time decoupling. 
+
+The sequence diagram is initialized by the user subscribing to a table. This makes the client subscribe to topics on the PubSubServer. At some time the PubSubServer will receive a message about the game starting from the dealer. The PubSubServer notifies The Subscriber about the event and the subscriber acknolwedges the messages. It then invokes game start on the MainWindow. 
+
+When the game is started the User puts a bet and the bet is published. When the bet is placed, then the dealer will hand out cards. The PubSubServer will notify the Subscriber when the event occurs. The Subscriber then invokes the MainVindow and show the cards to the user. 
+
+The User can then choose to ask for more cards or stand. In this case the User choses to Stand. This event is published to the PubSubServer. Then the PubSubServer receives an event about the game being done and the Subscriber and MainWindow is notified. MainWindow then display the result of the game to the user.
+
+\myFigure{SequenceDiagramClient}{Client sequence diagram }{fig:client_sq}{1}
+\FloatBarrier
+
 \section{Design and implementation of server}
 The server in this context is the Dealer. The Dealer furthermore uses classes from the Shared project and communicates with the publish subscribe server.
 

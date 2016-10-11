@@ -7,21 +7,14 @@
         mc:Ignorable="d"
         Title="Dealer" Height="350" Width="525">
     <Grid>
-        <TextBlock Name="Block1" HorizontalAlignment="Left" Height="23" Margin="148,11,0,0" TextWrapping="Wrap"
-                   Text="Topic: Table 1" VerticalAlignment="Top" Width="78" />
-        <TextBlock Name="Block2" HorizontalAlignment="Left" Height="23" Margin="231,11,0,0" TextWrapping="Wrap"
-                   Text="Sub Topic: Sub Table 1" VerticalAlignment="Top" Width="118" />
+        <TextBlock Name="Block1" HorizontalAlignment="Left" Height="23" Margin="148,11,0,0" TextWrapping="Wrap" Text="Topic: Table 1" VerticalAlignment="Top" Width="78"/>
+        <TextBlock Name="Block2" HorizontalAlignment="Left" Height="23" Margin="231,11,0,0" TextWrapping="Wrap" Text="Sub Topic: Sub Table 1" VerticalAlignment="Top" Width="118"/>
 
-        <Button x:Name="button" Content="Start Game" HorizontalAlignment="Left" Margin="215,51,0,0"
-                VerticalAlignment="Top" Width="75" Click="button_Click" />
-        <TextBlock HorizontalAlignment="Left" Height="23" Margin="148,110,0,0" TextWrapping="Wrap" Text="Cards:"
-                   VerticalAlignment="Top" Width="31" />
-        <TextBlock x:Name="totalVal" HorizontalAlignment="Left" Height="23" Margin="377,138,0,0" TextWrapping="Wrap"
-                   VerticalAlignment="Top" Width="50" />
-        <TextBlock HorizontalAlignment="Left" Height="23" Margin="377,110,0,0" TextWrapping="Wrap" Text="Total Value"
-                   VerticalAlignment="Top" Width="61" />
-        <ListBox x:Name="listBox" HorizontalAlignment="Left" Height="100" Margin="119,133,0,0" VerticalAlignment="Top"
-                 Width="208" />
+        <Button x:Name="button" Content="Start Game" HorizontalAlignment="Left" Margin="215,51,0,0" VerticalAlignment="Top" Width="75" Click="button_Click"/>
+        <TextBlock HorizontalAlignment="Left" Height="23" Margin="148,110,0,0" TextWrapping="Wrap" Text="Cards:" VerticalAlignment="Top" Width="31"/>
+        <TextBlock x:Name="totalVal" HorizontalAlignment="Left" Height="23" Margin="377,138,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="50"/>
+        <TextBlock HorizontalAlignment="Left" Height="23" Margin="377,110,0,0" TextWrapping="Wrap" Text="Total Value" VerticalAlignment="Top" Width="61"/>
+        <ListBox x:Name="listBox" HorizontalAlignment="Left" Height="100" Margin="119,133,0,0" VerticalAlignment="Top" Width="208"/>
 
     </Grid>
 </Window>

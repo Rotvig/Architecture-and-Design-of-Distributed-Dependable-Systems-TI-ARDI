@@ -6,43 +6,41 @@ using Shared;
 
 namespace PubSubServer
 {
-    internal class Filter
+    class Subscribers
     {
-        private static readonly Dictionary<string, List<SubscriberTuple>> _subscribersList =
-            new Dictionary<string, List<SubscriberTuple>>();
+        static readonly Dictionary<string, List<SubscriberTuple>> _subscribersList = new Dictionary<string, List<SubscriberTuple>>();
 
-        public static Dictionary<string, List<SubscriberTuple>> SubscribersList
+        static public Dictionary<string, List<SubscriberTuple>> SubscribersList
         {
             get
             {
-                lock (typeof (Filter))
+                lock (typeof(Subscribers))
                 {
                     return _subscribersList;
                 }
             }
         }
 
-        public static List<SubscriberTuple> GetSubscribers(string topicName)
+        static public List<SubscriberTuple> GetSubscribers(String topicName)
         {
-            lock (typeof (Filter))
+            lock (typeof(Subscribers))
             {
                 if (SubscribersList.ContainsKey(topicName))
                 {
                     return SubscribersList[topicName];
                 }
-                return null;
+                else
+                    return null;
             }
         }
 
-        public static void AddSubscriber(string topicName, Guid subscriptionId, EndPoint subscriberEndPoint)
+        static public void AddSubscriber(string topicName, Guid subscriptionId, EndPoint subscriberEndPoint)
         {
-            lock (typeof (Filter))
+            lock (typeof(Subscribers))
             {
                 if (SubscribersList.ContainsKey(topicName))
                 {
-                    if (
-                        !SubscribersList[topicName].Contains(
-                            SubscribersList[topicName].Find(x => x.Endpoint == subscriberEndPoint)))
+                    if (!SubscribersList[topicName].Contains(SubscribersList[topicName].Find(x => x.Endpoint == subscriberEndPoint)))
                     {
                         SubscribersList[topicName].Add(new SubscriberTuple(subscriberEndPoint, subscriptionId));
                     }
@@ -57,22 +55,21 @@ namespace PubSubServer
                     SubscribersList.Add(topicName, newSubscribersList);
                 }
             }
+
         }
 
-        public static void RemoveSubscriber(string topicName, Guid SubscriptionId)
+        static public void RemoveSubscriber(String topicName, Guid SubscriptionId)
         {
-            lock (typeof (Filter))
+            lock (typeof(Subscribers))
             {
                 if (!SubscribersList.ContainsKey(topicName)) return;
 
-                if (
-                    SubscribersList[topicName].Contains(
-                        SubscribersList[topicName].First(x => x.SubscriptionId == SubscriptionId)))
+                if (SubscribersList[topicName].Contains(SubscribersList[topicName].First(x => x.SubscriptionId == SubscriptionId)))
                 {
-                    SubscribersList[topicName].Remove(
-                        SubscribersList[topicName].First(x => x.SubscriptionId == SubscriptionId));
+                    SubscribersList[topicName].Remove(SubscribersList[topicName].First(x => x.SubscriptionId == SubscriptionId));
                 }
             }
         }
+
     }
 }

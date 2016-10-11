@@ -14,10 +14,11 @@ namespace Shared
         private readonly Socket client;
         private readonly EndPoint remoteEndPoint;
         private byte[] data;
+        private int recv;
         private bool isReceivingStarted;
         private const int Port = 10001;
         private string currentTopic;
-        private readonly List<int> messageNumbersRecieved = new List<int>();
+        private List<int> messageNumbersRecieved = new List<int>(); 
 
         public Subscriber()
         {
@@ -88,8 +89,8 @@ namespace Shared
             var publisherEndPoint = client.LocalEndPoint;
             while (true)
             {
-                var receive = client.ReceiveFrom(data, ref publisherEndPoint);
-                var msg = Encoding.ASCII.GetString(data, 0, receive);
+                recv = client.ReceiveFrom(data, ref publisherEndPoint);
+                var msg = Encoding.ASCII.GetString(data, 0, recv);
                 if (string.IsNullOrEmpty(msg)) continue;
 
                 var message = JsonConvert.DeserializeObject<Message>(msg);
@@ -106,8 +107,7 @@ namespace Shared
         {
             message.Header.Command = Command.Ack;
             var serializedMessage = JsonConvert.SerializeObject(message);
-            client.SendTo((Encoding.ASCII.GetBytes(serializedMessage)), serializedMessage.Length, SocketFlags.None,
-                endPoint);
+            client.SendTo((Encoding.ASCII.GetBytes(serializedMessage)), serializedMessage.Length ,SocketFlags.None, endPoint);
         }
 
         public class NewMessageEvent : EventArgs

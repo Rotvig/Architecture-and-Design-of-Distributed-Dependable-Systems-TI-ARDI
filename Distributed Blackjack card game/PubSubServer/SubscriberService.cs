@@ -31,18 +31,18 @@ namespace PubSubServer
             EndPoint remoteEp = new IPEndPoint(IPAddress.Any, 0);
             while (true)
             {
-                var receive = 0;
+                var recv = 0;
                 var data = new byte[1024];
-                receive = server.ReceiveFrom(data, ref remoteEp);
-                var message = JsonConvert.DeserializeObject<Message>(Encoding.ASCII.GetString(data, 0, receive));
+                recv = server.ReceiveFrom(data, ref remoteEp);
+                var message = JsonConvert.DeserializeObject<Message>(Encoding.ASCII.GetString(data, 0, recv));
 
                 switch (message.Header.Command)
                 {
                     case Command.Subscribe:
-                        Filter.AddSubscriber(message.Header.Topic, message.Content.SubscriptionId.Value, remoteEp);
+                        Subscribers.AddSubscriber(message.Header.Topic, message.Content.SubscriptionId.Value, remoteEp);
                         break;
                     case Command.Unsubscribe:
-                        Filter.RemoveSubscriber(message.Header.Topic, message.Content.SubscriptionId.Value);
+                        Subscribers.RemoveSubscriber(message.Header.Topic, message.Content.SubscriptionId.Value);
                         break;
                 }
             }

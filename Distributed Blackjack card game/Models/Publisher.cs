@@ -18,10 +18,9 @@ namespace Shared
             remoteEndPoint = new IPEndPoint(Utils.GetLocalIp4Address(), Port);
         }
 
-        public void Publish(string topic, Event @event, TimeSpan? time = null, EventData eventData = null,
-            Guid? subscriptionId = null, bool publishToSubscriptionId = false)
+        public void Publish(string topic, Event @event, TimeSpan? time = null, EventData eventData = null,  Guid? subscriptionId = null, bool publishToSubscriptionId = false)
         {
-            DateTime? timeout = DateTime.Now.AddSeconds(1);
+            DateTime? timeout =null;
             if (time.HasValue)
                 timeout = DateTime.Now.Add(TimeSpan.FromSeconds(time.Value.Seconds));
             client.SendTo(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(
@@ -38,7 +37,7 @@ namespace Shared
                     {
                         Event = @event,
                         EventData = eventData,
-                        SubscriptionId = subscriptionId
+                        SubscriptionId = subscriptionId,
                     }
                 })),
                 remoteEndPoint);

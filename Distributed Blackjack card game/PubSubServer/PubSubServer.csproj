@@ -42,6 +42,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -59,7 +60,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ConcurrentList.cs" />
-    <Compile Include="Filter.cs" />
+    <Compile Include="Subscribers.cs" />
     <Compile Include="MessageService.cs" />
     <Compile Include="PublisherService.cs" />
     <Compile Include="SubscriberService.cs" />

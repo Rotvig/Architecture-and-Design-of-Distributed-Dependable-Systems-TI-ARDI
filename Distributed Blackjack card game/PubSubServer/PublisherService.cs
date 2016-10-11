@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -37,23 +38,34 @@ namespace PubSubServer
             {
                 try
                 {
+                    var recv = 0;
                     var data = new byte[1024];
-                    var receive = server.ReceiveFrom(data, ref remoteEp);
-                    var deserializedMessage =
-                        JsonConvert.DeserializeObject<Message>(Encoding.ASCII.GetString(data, 0, receive));
+                    recv = server.ReceiveFrom(data, ref remoteEp);
+                    var deserializedMessage = JsonConvert.DeserializeObject<Message>(Encoding.ASCII.GetString(data, 0, recv));
 
                     if (deserializedMessage.Header.Command != Command.Publish) continue;
                     if (string.IsNullOrEmpty(deserializedMessage.Header.Topic)) continue;
 
-                    var subscriberListForThisTopic = Filter.GetSubscribers(deserializedMessage.Header.Topic);
-                    var workerThreadParameters = new WorkerThreadParameters
-                    {
-                        MessageService = messageService,
-                        SubscriberListForThisTopic = subscriberListForThisTopic,
-                        DeserializedMessage = deserializedMessage
-                    };
+                    var subscriberListForThisTopic = Subscribers.GetSubscribers(deserializedMessage.Header.Topic);
 
-                    ThreadPool.QueueUserWorkItem(Publish, workerThreadParameters);
+                    if (subscriberListForThisTopic == null) return;
+
+                    if (deserializedMessage.Content.SubscriptionId != null &&
+                        deserializedMessage.Header.PublishToSubscriptionId)
+                    {
+                        var subscriber =
+                            subscriberListForThisTopic.Single(
+                                x => x.SubscriptionId == deserializedMessage.Content.SubscriptionId);
+                        PublishMessage(deserializedMessage, subscriber);
+
+                    }
+                    else
+                    {
+                        foreach (var subscriber in subscriberListForThisTopic)
+                        {
+                            PublishMessage(deserializedMessage, subscriber);
+                        }
+                    }
                 }
                 catch
                 {
@@ -62,34 +74,9 @@ namespace PubSubServer
             }
         }
 
-        public static void Publish(object stateInfo)
+        private static void PublishMessage(Message message, SubscriberTuple subscriber)
         {
-            var workerThreadParameters = (WorkerThreadParameters) stateInfo;
-            var subscriberListForThisTopic = workerThreadParameters.SubscriberListForThisTopic;
-
-            if (subscriberListForThisTopic == null) return;
-
-            if (workerThreadParameters.DeserializedMessage.Content.SubscriptionId != null &&
-                workerThreadParameters.DeserializedMessage.Header.PublishToSubscriptionId)
-            {
-                var subscriber =
-                    subscriberListForThisTopic.Single(
-                        x => x.SubscriptionId == workerThreadParameters.DeserializedMessage.Content.SubscriptionId);
-                PublishMessage(workerThreadParameters.MessageService, workerThreadParameters.DeserializedMessage,
-                    subscriber);
-                return;
-            }
-
-            foreach (var subscriber in subscriberListForThisTopic)
-            {
-                PublishMessage(workerThreadParameters.MessageService, workerThreadParameters.DeserializedMessage,
-                    subscriber);
-            }
-        }
-
-        private static void PublishMessage(MessageService service, Message message, SubscriberTuple subscriber)
-        {
-            service.AddItemToList(message, subscriber.Endpoint);
+            messageService.AddItemToList(message, subscriber.Endpoint);
         }
     }
 

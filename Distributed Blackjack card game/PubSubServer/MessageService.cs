@@ -10,17 +10,17 @@ namespace PubSubServer
 {
     internal class MessageService
     {
-        private const int Port = 10003;
-        private readonly ConcurrentList MessageList;
-        private int messageNumber;
         private Socket socket;
+        private const int Port = 10003;
+        private int messageNumber = 0;
+        private readonly ConcurrentList MessageList;
 
         public MessageService()
         {
             MessageList = new ConcurrentList();
 
-            var consumerThread = new Thread(MessageQeueConsumer) {IsBackground = true};
-            var listenerThread = new Thread(HostListener) {IsBackground = true};
+            var consumerThread = new Thread(MessageQeueConsumer) { IsBackground = true };
+            var listenerThread = new Thread(HostListener) { IsBackground = true };
             listenerThread.Start();
             consumerThread.Start();
         }
@@ -53,9 +53,10 @@ namespace PubSubServer
             {
                 try
                 {
+                    var recv = 0;
                     var data = new byte[1024];
-                    var receive = socket.ReceiveFrom(data, ref remoteEp);
-                    var serializedMessage = Encoding.ASCII.GetString(data, 0, receive);
+                    recv = socket.ReceiveFrom(data, ref remoteEp);
+                    var serializedMessage = Encoding.ASCII.GetString(data, 0, recv);
                     var deserializedMessage = JsonConvert.DeserializeObject<Message>(serializedMessage);
 
                     if (deserializedMessage.Header.Command != Command.Ack) continue;
@@ -77,14 +78,13 @@ namespace PubSubServer
                 MessageServiceItem item;
                 if (!MessageList.TryGetNextItem(out item)) continue;
 
-                if ((item.Message.Header.Timeout == null && item.Message.Header.PublishTries > 0)
-                    || item.Message.Header.Timeout.HasValue && item.Message.Header.Timeout <= DateTime.Now)
+                if (item.Message.Header.Timeout.HasValue && item.Message.Header.Timeout <= DateTime.Now)
                 {
-                    if (item.Message.Content.SubscriptionId.HasValue)
+                    if (item.Message.Header.PublishToSubscriptionId && item.Message.Content.SubscriptionId.HasValue)
                     {
-                        Filter.RemoveSubscriber(item.Message.Header.Topic, item.Message.Content.SubscriptionId.Value);
+                        MessageList.RemoveItem(item.Message.Header.MessageNumber);
+                        Subscribers.RemoveSubscriber(item.Message.Header.Topic, item.Message.Content.SubscriptionId.Value);
                     }
-
                     continue;
                 }
 
@@ -96,8 +96,7 @@ namespace PubSubServer
         private void TryPublish(MessageServiceItem item)
         {
             var serializeObject = JsonConvert.SerializeObject(item.Message);
-            socket.SendTo(Encoding.ASCII.GetBytes(serializeObject), serializeObject.Length, SocketFlags.None,
-                item.EndPoint);
+            socket.SendTo(Encoding.ASCII.GetBytes(serializeObject), serializeObject.Length, SocketFlags.None, item.EndPoint);
             item.Message.Header.PublishTries ++;
         }
     }
@@ -105,6 +104,6 @@ namespace PubSubServer
     public class MessageServiceItem
     {
         public EndPoint EndPoint { get; set; }
-        public Message Message { get; set; }
+        public Message Message { get; set; } 
     }
 }

@@ -24,7 +24,7 @@ namespace PubSubServer
                 item = default(MessageServiceItem);
                 if (!list.Any())
                     return false;
-
+                    
                 index++;
                 index = index%list.Count;
                 item = list[index];
@@ -36,7 +36,7 @@ namespace PubSubServer
         {
             lock (Lock)
             {
-                return list.Remove(list.Single(x => x.Message.Header.MessageNumber == messageNumber));
+                return list.Remove(list.First(x => x.Message.Header.MessageNumber == messageNumber));
             }
         }
     }

@@ -7,38 +7,23 @@
         mc:Ignorable="d"
         Title="Player" Height="350" Width="525">
     <Grid>
-        <TextBox x:Name="topic" HorizontalAlignment="Left" Height="23" Margin="184,10,0,0" TextWrapping="Wrap"
-                 Text="Table 1" VerticalAlignment="Top" Width="120" />
-        <TextBlock HorizontalAlignment="Left" Height="23" Margin="148,11,0,0" TextWrapping="Wrap" Text="Topic"
-                   VerticalAlignment="Top" Width="31" />
-        <TextBlock x:Name="message" HorizontalAlignment="Left" Margin="144,80,0,0" TextWrapping="Wrap"
-                   VerticalAlignment="Top" />
-        <Button x:Name="btn_sub" Content="Subscribe" HorizontalAlignment="Left" Margin="202,49,0,0"
-                VerticalAlignment="Top" Width="75" Click="btn_sub_Click" />
-        <Button x:Name="btn_unsub" Content="Unsubscribe" HorizontalAlignment="Left" Margin="202,49,0,0"
-                VerticalAlignment="Top" Width="75" Visibility="Collapsed" Click="btn_unsub_Click" />
+        <TextBox x:Name="topic" HorizontalAlignment="Left" Height="23" Margin="184,10,0,0" TextWrapping="Wrap" Text="Table 1" VerticalAlignment="Top" Width="120"/>
+        <TextBlock HorizontalAlignment="Left" Height="23" Margin="148,11,0,0" TextWrapping="Wrap" Text="Topic" VerticalAlignment="Top" Width="31"/>
+        <TextBlock x:Name="message" HorizontalAlignment="Left" Margin="144,80,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <Button x:Name="btn_sub" Content="Subscribe" HorizontalAlignment="Left" Margin="202,49,0,0" VerticalAlignment="Top" Width="75" Click="btn_sub_Click"/>
+        <Button x:Name="btn_unsub" Content="Unsubscribe" HorizontalAlignment="Left" Margin="202,49,0,0" VerticalAlignment="Top" Width="75" Visibility="Collapsed" Click="btn_unsub_Click"/>
         <TextBlock Name="lblTime" FontSize="16" Margin="428,74,9.667,209.667" />
-        <Button x:Name="btn_bet" Content="Bet" HorizontalAlignment="Left" Margin="202,74,0,0" VerticalAlignment="Top"
-                Width="75" Click="btn_bet_Click" IsEnabled="False" />
-        <TextBox x:Name="BetTextBox" HorizontalAlignment="Left" Height="23" Margin="292,74,0,0" TextWrapping="Wrap"
-                 Text="0" VerticalAlignment="Top" Width="120" />
-        <TextBlock HorizontalAlignment="Left" Height="23" Margin="148,11,0,0" TextWrapping="Wrap" Text="Topic"
-                   VerticalAlignment="Top" Width="31" />
-        <TextBlock HorizontalAlignment="Left" Height="23" Margin="148,110,0,0" TextWrapping="Wrap" Text="Cards:"
-                   VerticalAlignment="Top" Width="31" />
-        <TextBlock Name="totalVal" HorizontalAlignment="Left" Height="23" Margin="377,138,0,0" TextWrapping="Wrap"
-                   VerticalAlignment="Top" Width="50" />
-        <Button x:Name="btn_hit" Content="Hit me!" Click="btn_hit_Click" Margin="119,267,310,21" IsEnabled="False" />
-        <Button x:Name="btn_stand" Content="Stand" Click="btn_stand_Click" Margin="361,267,68,21"
-                RenderTransformOrigin="1.401,0.509" IsEnabled="False" />
-        <Button x:Name="btn_facedown" Content="Turn facedown Card" Margin="223,267,169,21" Click="btn_facedown_Click"
-                IsEnabled="False" />
-        <TextBlock HorizontalAlignment="Left" Height="23" Margin="377,110,0,0" TextWrapping="Wrap" Text="Total Value"
-                   VerticalAlignment="Top" Width="61" />
-        <ListBox x:Name="listBox" HorizontalAlignment="Left" Height="100" Margin="119,133,0,0" VerticalAlignment="Top"
-                 Width="208" />
-        <TextBlock Name="StandText" HorizontalAlignment="Left" Height="23" Margin="377,210,0,0" TextWrapping="Wrap"
-                   VerticalAlignment="Top" Width="107" />
+        <Button x:Name="btn_bet" Content="Bet" HorizontalAlignment="Left" Margin="202,74,0,0" VerticalAlignment="Top" Width="75" Click="btn_bet_Click" IsEnabled="False"/>
+        <TextBox x:Name="BetTextBox" HorizontalAlignment="Left" Height="23" Margin="292,74,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" />
+        <TextBlock HorizontalAlignment="Left" Height="23" Margin="148,11,0,0" TextWrapping="Wrap" Text="Topic" VerticalAlignment="Top" Width="31"/>
+        <TextBlock HorizontalAlignment="Left" Height="23" Margin="148,110,0,0" TextWrapping="Wrap" Text="Cards:" VerticalAlignment="Top" Width="31"/>
+        <TextBlock Name="totalVal" HorizontalAlignment="Left" Height="23" Margin="377,138,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="50"/>
+        <Button x:Name="btn_hit" Content="Hit me!" Click="btn_hit_Click" Margin="119,267,310,21" IsEnabled="False"/>
+        <Button x:Name="btn_stand" Content="Stand" Click="btn_stand_Click" Margin="361,267,68,21" RenderTransformOrigin="1.401,0.509" IsEnabled="False"/>
+        <Button x:Name="btn_facedown" Content="Turn facedown Card" Margin="223,267,169,21" Click="btn_facedown_Click" IsEnabled="False" />
+        <TextBlock HorizontalAlignment="Left" Height="23" Margin="377,110,0,0" TextWrapping="Wrap" Text="Total Value" VerticalAlignment="Top" Width="61"/>
+        <ListBox x:Name="listBox" HorizontalAlignment="Left" Height="100" Margin="119,133,0,0" VerticalAlignment="Top" Width="208"/>
+        <TextBlock Name="StandText" HorizontalAlignment="Left" Height="23" Margin="377,210,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="107"/>
 
     </Grid>
 </Window>

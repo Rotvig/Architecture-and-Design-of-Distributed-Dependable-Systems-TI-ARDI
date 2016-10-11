@@ -10,14 +10,13 @@ namespace Shared
     {
         public static IPAddress GetLocalIp4Address()
         {
-            return
-                Dns.GetHostAddresses(Dns.GetHostName())
-                    .FirstOrDefault(ipa => ipa.AddressFamily == AddressFamily.InterNetwork);
+            return Dns.GetHostAddresses(Dns.GetHostName()).FirstOrDefault(ipa => ipa.AddressFamily == AddressFamily.InterNetwork);
         }
 
         public const string TablePublishTopic = "Table 1";
         public const string TableSubscribeTopic = "Sub Table 1";
         public const int Timeout = 10000;
+
     }
 
     public static class Ext
@@ -25,7 +24,7 @@ namespace Shared
         private static readonly Random Rng = new Random();
 
         /// <summary>
-        ///     Fisher-Yates shuffles and returns a Queue
+        ///  Fisher-Yates shuffles and returns a Queue
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
