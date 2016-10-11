@@ -17,7 +17,7 @@ The dealer, publish/subscribe server and players will all be deployed on differe
 UDP is chosen as transport protocol because it is connectionless and faster than TCP. Also it allows for simple multicasting as multiple connection does not need to be setup for each message being sent.
 
 \section{Design and implementation}
-The software is divided into four different projects: Dealer, Player, PubSubServer and Shared. The Shared project contains classes used by both the Dealer and Player. By using a shared project no code is copied and the game logic and publish/subscribe mechanism needed by both Player and Dealer can be placed in this project.
+The software is divided into four different projects: Dealer, Player, PubSubServer and Shared. The Shared project contains classes used by both the Dealer, Player and PubSubServer. By using a shared project no code is copied and the game logic and publish/subscribe mechanism needed by both Player and Dealer can be placed in this project.
 
 \section{Design and implementation of the Publish/Subscribe server}
 In addition to describing the Client and server a small description of the publish/subscribe server is added. The publish subscribe server ensures a lower decoupling between clients and server.
