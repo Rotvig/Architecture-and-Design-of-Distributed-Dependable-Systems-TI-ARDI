@@ -19,6 +19,13 @@ UDP is chosen as transport protocol because it is connectionless and faster than
 \section{Design and implementation}
 The software is divided into four different projects: Dealer, Player, PubSubServer and Shared. The Shared project contains classes used by both the Dealer and Player. By using a shared project no code is copied and the game logic and publish/subscribe mechanism needed by both Player and Dealer can be placed in this project.
 
+A simplified overview of the system is showed in a sequence diagram in figure \ref{fig:system_sq}. Here the context of the Player, PubSubServer and Dealer is described in a game scenario. Bot Dealer and Player subscribes to a specific topic in the beginning. This topic would be the table name. The Dealer then starts the game and the Player bets. When the Player has placed a Bet the Dealer deals out cards. After receiving the cards the player chooses to stand and the Dealer sends the game result to the Player. 
+
+\myFigure{SequenceDiagramSystem}{system sequence diagram }{fig:system_sq}{0.95}
+\FloatBarrier
+
+In the following sections the PubSubServer, Player and Dealer will be described in more depth.
+
 \section{Design and implementation of the Publish/Subscribe server}
 In addition to describing the Client and server a small description of the publish/subscribe server is added. The publish subscribe server ensures a lower decoupling between clients and server.
 
@@ -81,3 +88,9 @@ The dealer uses the publisher class to for example publish the cards to the play
 \FloatBarrier
 
 \subsection{Sequence diagram}
+The behavior of the server is described in figure \ref{fig:server_sq}. Similar to the other sequence diagrams it is simplified by not writing all parameters being passed to methods, this is done to describe the context better and give a better overview. The diagram has three objects/classes from the server project: MainVindow, Publisher and Subscriber. The PubSubServer is added as an entity in the diagram to describe the context better. The Publisher, Subscriber and PubSubServer communicates through sockets
+
+When the Dealer application is opened it automatically subscribes to a topic. The topic is represen
+
+\myFigure{SequenceDiagramClient}{Server sequence diagram }{fig:server_sq}{0.95}
+\FloatBarrier
