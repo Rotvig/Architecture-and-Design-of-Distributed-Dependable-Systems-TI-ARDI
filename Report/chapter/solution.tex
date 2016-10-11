@@ -90,7 +90,11 @@ The dealer uses the publisher class to for example publish the cards to the play
 \subsection{Sequence diagram}
 The behavior of the server is described in figure \ref{fig:server_sq}. Similar to the other sequence diagrams it is simplified by not writing all parameters being passed to methods, this is done to describe the context better and give a better overview. The diagram has three objects/classes from the server project: MainVindow, Publisher and Subscriber. The PubSubServer is added as an entity in the diagram to describe the context better. The Publisher, Subscriber and PubSubServer communicates through sockets
 
-When the Dealer application is opened it automatically subscribes to a topic. The topic is represen
+When the Dealer application is opened it automatically subscribes to a topic. The Dealer then starts the game and publishes an event that the game is started.
 
-\myFigure{SequenceDiagramClient}{Server sequence diagram }{fig:server_sq}{0.95}
+After the game has started Players can bet. In this sequence diagam only on Player is playing at the table and only one bet event is received. After the Dealer has received bets it hands out cards by publishing the message. 
+
+The Players can then choose to stand or ask for more cards. In this scenario the event received is Stand. The Dealer then finishes the game and publishes GameOver to the Player.
+
+\myFigure{SequenceDiagramServer}{Server sequence diagram }{fig:server_sq}{0.95}
 \FloatBarrier
