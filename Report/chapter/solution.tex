@@ -1,5 +1,5 @@
 \chapter{Solution}
-This chapter will explain and discuss the chosen solution for implementing the system described in chapter \ref{chp:intro}
+This chapter will explain and discuss the chosen solution for implementing the system described in chapter \ref{chp:intro}.
 
 \section{Discussion of architecture decisions}
 The architecture is based on the publish/subscribe pattern. As shown in figure \ref{fig:basicArc} the dealer and players are decoupled with a publish/subscribe server. This decouples the clients and server in both time, space and flow. By decoupling in space the participants do not need to know each other and it is therefore easier to replace a client or server implementation. Decoupling clients and servers in flow will ensure that they do not block each other. Decoupling time will ensure that the participants do not need to be online at the same time. It is relevant to note that the time decoupling is difficult in a game scenario as multiple players will be forced to wait for a client. A specific game relevant time decoupling is therefore implemented in this solution.
