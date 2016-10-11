@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Shared;
+using Enumerable = System.Linq.Enumerable;
 
 namespace PubSubServer
 {
-    class Subscribers
+    class Filter
     {
         static readonly Dictionary<string, List<SubscriberTuple>> _subscribersList = new Dictionary<string, List<SubscriberTuple>>();
 
@@ -14,16 +15,17 @@ namespace PubSubServer
         {
             get
             {
-                lock (typeof(Subscribers))
+                lock (typeof(Filter))
                 {
                     return _subscribersList;
                 }
             }
+
         }
 
         static public List<SubscriberTuple> GetSubscribers(String topicName)
         {
-            lock (typeof(Subscribers))
+            lock (typeof(Filter))
             {
                 if (SubscribersList.ContainsKey(topicName))
                 {
@@ -36,7 +38,7 @@ namespace PubSubServer
 
         static public void AddSubscriber(string topicName, Guid subscriptionId, EndPoint subscriberEndPoint)
         {
-            lock (typeof(Subscribers))
+            lock (typeof(Filter))
             {
                 if (SubscribersList.ContainsKey(topicName))
                 {
@@ -58,9 +60,22 @@ namespace PubSubServer
 
         }
 
+        static public void RemoveSubscriber(String topicName, EndPoint endPoint)
+        {
+            lock (typeof(Filter))
+            {
+                if (!SubscribersList.ContainsKey(topicName)) return;
+
+                if (SubscribersList[topicName].Contains(SubscribersList[topicName].First(x => x.Endpoint == endPoint)))
+                {
+                    SubscribersList[topicName].Remove(SubscribersList[topicName].First(x => x.Endpoint == endPoint));
+                }
+            }
+        }
+
         static public void RemoveSubscriber(String topicName, Guid SubscriptionId)
         {
-            lock (typeof(Subscribers))
+            lock (typeof(Filter))
             {
                 if (!SubscribersList.ContainsKey(topicName)) return;
 

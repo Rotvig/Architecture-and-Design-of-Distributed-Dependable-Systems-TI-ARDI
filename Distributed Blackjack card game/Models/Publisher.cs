@@ -20,7 +20,7 @@ namespace Shared
 
         public void Publish(string topic, Event @event, TimeSpan? time = null, EventData eventData = null,  Guid? subscriptionId = null, bool publishToSubscriptionId = false)
         {
-            DateTime? timeout =null;
+            DateTime? timeout = DateTime.Now.AddSeconds(1);
             if (time.HasValue)
                 timeout = DateTime.Now.Add(TimeSpan.FromSeconds(time.Value.Seconds));
             client.SendTo(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(

@@ -78,13 +78,14 @@ namespace PubSubServer
                 MessageServiceItem item;
                 if (!MessageList.TryGetNextItem(out item)) continue;
 
-                if (item.Message.Header.Timeout.HasValue && item.Message.Header.Timeout <= DateTime.Now)
+                if ((item.Message.Header.Timeout == null && item.Message.Header.PublishTries > 0)
+                    || item.Message.Header.Timeout.HasValue && item.Message.Header.Timeout <= DateTime.Now)
                 {
-                    if (item.Message.Header.PublishToSubscriptionId && item.Message.Content.SubscriptionId.HasValue)
+                    if (item.Message.Content.SubscriptionId.HasValue)
                     {
-                        MessageList.RemoveItem(item.Message.Header.MessageNumber);
-                        Subscribers.RemoveSubscriber(item.Message.Header.Topic, item.Message.Content.SubscriptionId.Value);
+                        Filter.RemoveSubscriber(item.Message.Header.Topic, item.Message.Content.SubscriptionId.Value);
                     }
+
                     continue;
                 }
 
