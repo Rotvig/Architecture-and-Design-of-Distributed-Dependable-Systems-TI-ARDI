@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,7 +24,7 @@ namespace Player
             subscriber = new Subscriber();
             subscriber.NewMessage += (sender, @event) => Dispatcher.Invoke(() => NewMessage(@event.Message));
             publisher = new Publisher();
-            timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
             timer.Tick += timer_Tick;
         }
 
@@ -34,7 +33,7 @@ namespace Player
             switch (message.Content.Event)
             {
                 case Event.GameStart:
-                    time =  TimeSpan.FromSeconds((message.Header.Timeout.Value - DateTime.Now).Seconds);
+                    time = TimeSpan.FromSeconds((message.Header.Timeout.Value - DateTime.Now).Seconds);
                     timer.Start();
                     btn_bet.IsEnabled = true;
                     lblTime.Text = time.ToString();
@@ -64,7 +63,7 @@ namespace Player
 
         private void CheckIfBust()
         {
-            _value = cards.Sum(x =>x.Facedown ? 0 : x.Flipped? x.SecondaryValue : x.Value);
+            _value = cards.Sum(x => x.Facedown ? 0 : x.Flipped ? x.SecondaryValue : x.Value);
 
             if (_value > 21)
             {
@@ -75,7 +74,7 @@ namespace Player
                         card1.Flipped = true;
                         _value = cards.Sum(x => x.Facedown ? 0 : x.Flipped ? x.SecondaryValue : x.Value);
                         if (_value <= 21)
-                        break;
+                            break;
                     }
                 }
                 totalVal.Text = _value.ToString();
@@ -86,7 +85,6 @@ namespace Player
                     btn_stand.IsEnabled = false;
                     btn_hit.IsEnabled = false;
                 }
-                
             }
             else
             {
@@ -120,21 +118,20 @@ namespace Player
             totalVal.Text = cards.First().Value.ToString();
             btn_facedown.IsEnabled = true;
             btn_stand.IsEnabled = true;
-
         }
 
         private void btn_sub_Click(object sender, RoutedEventArgs e)
         {
             subscriber.Subscribe(topic.Text.Trim());
 
-            ((Button)sender).Visibility = Visibility.Collapsed;
+            ((Button) sender).Visibility = Visibility.Collapsed;
             btn_unsub.Visibility = Visibility.Visible;
         }
 
         private void btn_unsub_Click(object sender, RoutedEventArgs e)
         {
             subscriber.Unsubscribe();
-            ((Button)sender).Visibility = Visibility.Collapsed;
+            ((Button) sender).Visibility = Visibility.Collapsed;
             btn_sub.Visibility = Visibility.Visible;
         }
 
@@ -162,7 +159,7 @@ namespace Player
             publisher.Publish(
                 "Sub " + topic.Text.Trim(),
                 Event.Stand,
-                null, 
+                null,
                 new EventData
                 {
                     value = _value

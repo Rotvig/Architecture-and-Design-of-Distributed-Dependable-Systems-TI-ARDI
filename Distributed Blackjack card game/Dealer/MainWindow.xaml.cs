@@ -98,7 +98,7 @@ namespace Dealer
             publisher.Publish(Utils.TablePublishTopic, Event.GameStart, TimeSpan.FromSeconds(10));
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(Utils.Timeout+1000);
+                Thread.Sleep(Utils.Timeout + 1000);
                 Dispatcher.Invoke(HandoutCards);
             });
         }
@@ -152,7 +152,7 @@ namespace Dealer
 
             foreach (var player in players)
             {
-                if (player.Status == Status.Stands && 
+                if (player.Status == Status.Stands &&
                     !dealerValue.HasValue ||
                     (dealerValue.HasValue && player.value >= dealerValue))
                 {
@@ -161,7 +161,7 @@ namespace Dealer
                     //Standoff
                     if (player.Cards.Where(x => x.Facedown == false).Sum(x => x.Value) != dealerValue)
                     {
-                        prizeMoney = prizeMoney * 1.5;
+                        prizeMoney = prizeMoney*1.5;
                     }
 
                     publisher.Publish(Utils.TablePublishTopic,
@@ -193,7 +193,7 @@ namespace Dealer
         }
 
         /// <summary>
-        /// Dealer algorithm returns null when dealer is bust
+        ///     Dealer algorithm returns null when dealer is bust
         /// </summary>
         /// <returns></returns>
         private int? PlayDealerCards()

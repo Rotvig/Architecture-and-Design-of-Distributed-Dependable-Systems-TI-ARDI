@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -38,10 +37,10 @@ namespace PubSubServer
             {
                 try
                 {
-                    var recv = 0;
                     var data = new byte[1024];
-                    recv = server.ReceiveFrom(data, ref remoteEp);
-                    var deserializedMessage = JsonConvert.DeserializeObject<Message>(Encoding.ASCII.GetString(data, 0, recv));
+                    var receive = server.ReceiveFrom(data, ref remoteEp);
+                    var deserializedMessage =
+                        JsonConvert.DeserializeObject<Message>(Encoding.ASCII.GetString(data, 0, receive));
 
                     if (deserializedMessage.Header.Command != Command.Publish) continue;
                     if (string.IsNullOrEmpty(deserializedMessage.Header.Topic)) continue;
@@ -70,16 +69,21 @@ namespace PubSubServer
 
             if (subscriberListForThisTopic == null) return;
 
-            if (workerThreadParameters.DeserializedMessage.Content.SubscriptionId != null && workerThreadParameters.DeserializedMessage.Header.PublishToSubscriptionId)
+            if (workerThreadParameters.DeserializedMessage.Content.SubscriptionId != null &&
+                workerThreadParameters.DeserializedMessage.Header.PublishToSubscriptionId)
             {
-                var subscriber = subscriberListForThisTopic.Single(x => x.SubscriptionId == workerThreadParameters.DeserializedMessage.Content.SubscriptionId);
-                PublishMessage(workerThreadParameters.MessageService, workerThreadParameters.DeserializedMessage, subscriber);
+                var subscriber =
+                    subscriberListForThisTopic.Single(
+                        x => x.SubscriptionId == workerThreadParameters.DeserializedMessage.Content.SubscriptionId);
+                PublishMessage(workerThreadParameters.MessageService, workerThreadParameters.DeserializedMessage,
+                    subscriber);
                 return;
             }
 
             foreach (var subscriber in subscriberListForThisTopic)
             {
-                PublishMessage(workerThreadParameters.MessageService, workerThreadParameters.DeserializedMessage, subscriber);
+                PublishMessage(workerThreadParameters.MessageService, workerThreadParameters.DeserializedMessage,
+                    subscriber);
             }
         }
 

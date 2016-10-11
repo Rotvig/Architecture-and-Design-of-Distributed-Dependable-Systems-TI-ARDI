@@ -24,7 +24,7 @@ namespace PubSubServer
                 item = default(MessageServiceItem);
                 if (!list.Any())
                     return false;
-                    
+
                 index++;
                 index = index%list.Count;
                 item = list[index];

@@ -10,17 +10,17 @@ namespace PubSubServer
 {
     internal class MessageService
     {
-        private Socket socket;
         private const int Port = 10003;
-        private int messageNumber = 0;
         private readonly ConcurrentList MessageList;
+        private int messageNumber;
+        private Socket socket;
 
         public MessageService()
         {
             MessageList = new ConcurrentList();
 
-            var consumerThread = new Thread(MessageQeueConsumer) { IsBackground = true };
-            var listenerThread = new Thread(HostListener) { IsBackground = true };
+            var consumerThread = new Thread(MessageQeueConsumer) {IsBackground = true};
+            var listenerThread = new Thread(HostListener) {IsBackground = true};
             listenerThread.Start();
             consumerThread.Start();
         }
@@ -53,10 +53,9 @@ namespace PubSubServer
             {
                 try
                 {
-                    var recv = 0;
                     var data = new byte[1024];
-                    recv = socket.ReceiveFrom(data, ref remoteEp);
-                    var serializedMessage = Encoding.ASCII.GetString(data, 0, recv);
+                    var receive = socket.ReceiveFrom(data, ref remoteEp);
+                    var serializedMessage = Encoding.ASCII.GetString(data, 0, receive);
                     var deserializedMessage = JsonConvert.DeserializeObject<Message>(serializedMessage);
 
                     if (deserializedMessage.Header.Command != Command.Ack) continue;
@@ -97,7 +96,8 @@ namespace PubSubServer
         private void TryPublish(MessageServiceItem item)
         {
             var serializeObject = JsonConvert.SerializeObject(item.Message);
-            socket.SendTo(Encoding.ASCII.GetBytes(serializeObject), serializeObject.Length, SocketFlags.None, item.EndPoint);
+            socket.SendTo(Encoding.ASCII.GetBytes(serializeObject), serializeObject.Length, SocketFlags.None,
+                item.EndPoint);
             item.Message.Header.PublishTries ++;
         }
     }
@@ -105,6 +105,6 @@ namespace PubSubServer
     public class MessageServiceItem
     {
         public EndPoint EndPoint { get; set; }
-        public Message Message { get; set; } 
+        public Message Message { get; set; }
     }
 }

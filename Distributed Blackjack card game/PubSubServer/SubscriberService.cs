@@ -31,10 +31,10 @@ namespace PubSubServer
             EndPoint remoteEp = new IPEndPoint(IPAddress.Any, 0);
             while (true)
             {
-                var recv = 0;
+                var receive = 0;
                 var data = new byte[1024];
-                recv = server.ReceiveFrom(data, ref remoteEp);
-                var message = JsonConvert.DeserializeObject<Message>(Encoding.ASCII.GetString(data, 0, recv));
+                receive = server.ReceiveFrom(data, ref remoteEp);
+                var message = JsonConvert.DeserializeObject<Message>(Encoding.ASCII.GetString(data, 0, receive));
 
                 switch (message.Header.Command)
                 {
