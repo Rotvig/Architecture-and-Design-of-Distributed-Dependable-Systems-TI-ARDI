@@ -19,6 +19,13 @@ UDP is chosen as transport protocol because it is connectionless and faster than
 \section{Design and implementation}
 The software is divided into four different projects: Dealer, Player, PubSubServer and Shared. The Shared project contains classes used by both the Dealer, Player and PubSubServer. By using a shared project no code is copied and the game logic and publish/subscribe mechanism needed by both Player and Dealer can be placed in this project.
 
+A simplified overview of the system is showed in a sequence diagram in figure \ref{fig:system_sq}. Here the context of the Player, PubSubServer and Dealer is described in a game scenario. Bot Dealer and Player subscribes to a specific topic in the beginning. This topic would be the table name. The Dealer then starts the game and the Player bets. When the Player has placed a Bet the Dealer deals out cards. After receiving the cards the player chooses to stand and the Dealer sends the game result to the Player. 
+
+\myFigure{SequenceDiagramSystem}{system sequence diagram }{fig:system_sq}{0.95}
+\FloatBarrier
+
+In the following sections the PubSubServer, Player and Dealer will be described in more depth.
+
 \section{Design and implementation of the Publish/Subscribe server}
 In addition to describing the Client and server a small description of the publish/subscribe server is added. The publish subscribe server ensures a lower decoupling between clients and server.
 
@@ -53,15 +60,15 @@ The Util class is used by the client to get its own IP adress. This method is al
 \FloatBarrier
 
 \subsection{Sequence diagram}
-The behavior of the client is described in figure \ref{fig:client_sq}. The diagram has four objects: \emph{MainVindow}, \emph{Publisher} and \emph{subscriber}. The \emph{PubSubServer} is added as an entity in the diagram to describe the context better. The \emph{Publisher}, \emph{Subscriber} and \emph{PubSubServer} communicates through sockets. The Subscriber runs in its own thread to asyncronously send ACKs to the PubSubServer. The ACKs are used for the time decoupling. 
+The behavior of the client is described in figure \ref{fig:client_sq}. The diagram is simplified by not writing all parameters being passed to methods, this is done to describe the context better and give a better overview. The diagram has three objects/classes from the client project: MainVindow, Publisher and Subscriber. The PubSubServer is added as an entity in the diagram to describe the context better. The Publisher, Subscriber and PubSubServer communicates through sockets. The Subscriber runs in its own thread to asyncronously send ACKs to the PubSubServer. These ACKs are used for the time decoupling so that the PubSubServer knows if the message was received or not.
 
-The sequence diagram is initialized by the user subscribing to a table. This makes the client subscribe to topics on the PubSubServer. At some time the PubSubServer will receive a message about the game starting from the dealer. The PubSubServer notifies The Subscriber about the event and the subscriber acknolwedges the messages. It then invokes game start on the MainWindow. 
+The sequence diagram is initialized by the user subscribing to a table. This result in the client subscribing to a specific topic on the PubSubServer. This topic would be a table name. At some time the PubSubServer will receive a message about the game starting from the dealer. The PubSubServer notifies the Subscriber about the event and the subscriber acknolwedges the messages. It then invokes game start on the MainWindow. 
 
-When the game is started the User puts a bet and the bet is published. When the bet is placed, then the dealer will hand out cards. The PubSubServer will notify the Subscriber when the event occurs. The Subscriber then invokes the MainVindow and show the cards to the user. 
+When the game is started the User makes a bet and the bet is published. When the bet is placed, then the dealer will hand out cards. The PubSubServer will notify the Subscriber when the event occurs. The Subscriber then invokes the MainVindow and show the cards to the user. 
 
-The User can then choose to ask for more cards or stand. In this case the User choses to Stand. This event is published to the PubSubServer. Then the PubSubServer receives an event about the game being done and the Subscriber and MainWindow is notified. MainWindow then display the result of the game to the user.
+The User can then choose to ask for more cards or stand. In this case the User choses to Stand. This event is published to the PubSubServer. Then the PubSubServer receives an event about the game being done and the Subscriber and MainWindow is notified. MainWindow then displays the result of the game to the user.
 
-\myFigure{SequenceDiagramClient}{Client sequence diagram }{fig:client_sq}{1}
+\myFigure{SequenceDiagramClient}{Client sequence diagram }{fig:client_sq}{0.95}
 \FloatBarrier
 
 \section{Design and implementation of server}
@@ -81,3 +88,9 @@ The dealer uses the publisher class to for example publish the cards to the play
 \FloatBarrier
 
 \subsection{Sequence diagram}
+The behavior of the server is described in figure \ref{fig:server_sq}. Similar to the other sequence diagrams it is simplified by not writing all parameters being passed to methods, this is done to describe the context better and give a better overview. The diagram has three objects/classes from the server project: MainVindow, Publisher and Subscriber. The PubSubServer is added as an entity in the diagram to describe the context better. The Publisher, Subscriber and PubSubServer communicates through sockets
+
+When the Dealer application is opened it automatically subscribes to a topic. The topic is represen
+
+\myFigure{SequenceDiagramClient}{Server sequence diagram }{fig:server_sq}{0.95}
+\FloatBarrier
