@@ -26,61 +26,63 @@ A simplified overview of the system is showed in a sequence diagram in figure \r
 
 In the following sections the PubSubServer, Player and Dealer will be described in more depth.
 
-\section{Design and implementation of the Publish/Subscribe server}
-In addition to describing the Client and server a small description of the Publish/Subscribe server is added. The publish subscribe server ensures a lower decoupling between clients and server.
+\section{Design and implementation of the PubSubServer}
+In addition to describing the client and server a small description of the PubSubServer is added. The publish subscribe server ensures a lower decoupling between clients and servers.
 
-\myFigure{PubSub_class}{Publish/Subscribe server class diagram }{fig:pubSub_class}{1}
+\myFigure{PubSub_class}{PubSubServer class diagram }{fig:pubSub_class}{1}
 
-In figure \ref{fig:pubSub_class} the structure is shown. It consists of a PublisherService, SubscriberService, Subscribers, MessageService and a ConcurrentList class. The PublisherService listens for Publishers that wants to publish messages. When a message is received it checks whether it is a publish message, and finds the subscribers based on the topic and passes the information on to the MessageService by invoking AddItemToList with the message, and the endpoint of the subscriber. If the message is not a publish message it is discarded by the PublisherService.
+In figure \ref{fig:pubSub_class} the structure is shown. It consists of a PublisherService, SubscriberService, Subscribers, MessageService and a ConcurrentList class. 
 
-Message about clients who want to subscribe or unsubscribe are handled by the SubscriberService which is listening for these types of messages and handles them. It will add  or remove subscribers to a dictionary. This dictionary is handled by the Subscribers class.
+The PublisherService listens for Publishers that wants to publish messages. When a message is received it checks whether it is a publish message. It then finds the subscribers based on the topic and passes the information on to the MessageService by invoking AddItemToList. If the message is not a publish message it is discarded by the PublisherService.
 
-The Subscribers class provides an implementation of the dictionary that holds the subscribers endpoint and which topics they are interested in. Through the Subscribers class the subscriber can easily add and remove subscribers while the publisher can easily locate subscribers relevant for a topic. This class also handles the element of concurrency and introduces a lock.
+Message about clients who wants to subscribe or unsubscribe are handled by the SubscriberService which is listening for these types of messages and handles them. It will add  or remove subscribers to a dictionary. This dictionary is handled by the Subscribers class.
 
-MessageService ensures the time decoupling. It places messages on an implemented queue called concurrentList. The queue is custom implemented to handle concurrency. If a message can not be published to a subscriber at a given time it will save the message on the queue and publish the message at a later time and the subscriber will then receive it when it is online again. Some messages includes timeouts - for example the dealer allows a window of 10 seconds to receive bets. If the 10 seconds has passed the subscriber will not receive the message when it comes back online because it is not relevant anymore.
+The Subscribers class provides an implementation of the dictionary that holds the subscribers endpoint and which topics they are interested in. Through the Subscribers class the SubscriberService can easily add and remove subscribers while the PublisherService can easily locate subscribers relevant for a topic. This class also handles the element of concurrency and introduces a lock.
+
+MessageService ensures the time decoupling. It places messages on an implemented queue called concurrentList. The queue is custom implemented to handle concurrency. If a message can not be published to a subscriber at a given time it will save the message on the queue and publish the message at a later time. The subscriber will receive it when it is online again. Some messages includes timeouts - for example the dealer allows a window of 10 seconds to receive bets. If the 10 seconds has passed the subscriber will not receive the message when it comes back online because it is not relevant anymore.
 \FloatBarrier
 
 \section{Design and implementation of client}
-The client in this context is the Player. The Player furthermore uses classes from the Shared project and communicates with the publish subscribe server. The Player subscribes to a specific table.
+The client in this context is the Player. It uses classes from the Shared project and communicates with the PubSubServer. The Player subscribes to a specific table.
 
-\myFigure{client_gui}{2 players graphical user interface }{fig:client_gui}{1}
+\myFigure{client_gui}{Two players' graphical user interface }{fig:client_gui}{1}
 
-The implemented client is shown in figure \ref{fig:client_gui}. Here two different players are running. A player can bet money when a game is started by the dealer and can also see the dealed cards. When a game is running the players can \emph{turn facedown card}, ask the dealer to \emph{hit me} and \emph{stand}. The figure shows a game that has finished and the one player got a \emph{bust} while the other chose to stand on 17.
+The implemented client is shown in figure \ref{fig:client_gui}. Here two different players are playing. A player can bet money when a game is started by the dealer and can also see the dealt cards. After betting the players can \emph{turn facedown card}, ask the dealer to \emph{hit me} and \emph{stand}. The figure shows a game that has finished and one player is \emph{bust} while the other chose to stand on 17.
 \FloatBarrier
 
 
 \subsection{Class diagram}
-The clients graphical user interface is developed in WPF. This is the MainWiew. Here the user can bet, see the dealed cards and choose to stand, ask for more cards. 
+The clients graphical user interface is developed in WPF. This is the MainWindow.
 
-The MainWiew uses the Publisher and Subscriber which is in the Shared project. As they are used by both the client and server. Through the Publisher class the MainWiew can publish messages based on the users action. For example if the user places a bet a message would be published. The MainWiew also subscribes to a specific table and receives messages from the dealer. This could for example be the dealed cards.
+The MainWindow uses the Publisher and Subscriber classes which is in the Shared project as they are used by both the player and dealer. Through the Publisher class the MainWindow can publish messages based on the users action. For example if the user places a bet a message would be published. The MainWindow also subscribes to a specific table and receives messages from the dealer. This could for example be the dealt cards.
 
-The Util class is used by the client to get its own IP adress. This method is also used by both client and server.
+The Utils class is used by the client to get its own IP address. This method is also used by both player and dealer.
 
 \myFigure{client_class}{Client class diagram }{fig:client_class}{1}
 \FloatBarrier
 
 \subsection{Sequence diagram}
-The behavior of the client is described in figure \ref{fig:client_sq}. The diagram is simplified by not writing all parameters being passed to methods, this is done to describe the context better and give a better overview. The diagram has three objects/classes from the client project: MainWindow, Publisher and Subscriber. The PubSubServer is added as an entity in the diagram to describe the context better. The Publisher, Subscriber and PubSubServer communicates through sockets. The Subscriber runs in its own thread to asynchronously send ACKs to the PubSubServer. These ACKs are used for the time decoupling so that the PubSubServer knows if the message was received or not.
+The behavior of the client is described in figure \ref{fig:client_sq}. The diagram is simplified by not writing all parameters being passed to methods, this is done to describe the context better and give a better overview. The diagram has three objects/classes from the client and shared project: MainWindow, Publisher and Subscriber. The PubSubServer is added as an entity in the diagram to describe the context better. The Publisher, Subscriber and PubSubServer communicates through sockets. The Subscriber runs in its own thread to asynchronously send ACKs to the PubSubServer. These ACKs are used for the time decoupling so that the PubSubServer knows if the message was received or not.
 
-The sequence diagram is initialized by the user subscribing to a table. This results in the client subscribing to a specific topic on the PubSubServer. This topic would be a table name. At some time the PubSubServer will receive a message about the game starting from the dealer. The PubSubServer notifies the Subscriber about the event and the subscriber acknolwedges the messages. It then invokes an event which MainWindow is listening to, with the message game start. 
+The sequence diagram is initialized by the user subscribing to a table. This results in the client subscribing to a specific topic on the PubSubServer. This topic would be a table name. At some time the PubSubServer will receive a message from the dealer that the game has started. The PubSubServer notifies the Subscriber about the event and the subscriber acknowledges the messages. It then invokes an event which the MainWindow is listening to, with the message game start. 
 
-When the game is started the User makes a bet and the bet is published. When the bet is placed, then the dealer will hand out cards. The PubSubServer will notify the Subscriber when the event occurs. The Subscriber then invokes an event and MainWindow displays the cards to the user. 
+When the game has started the user makes a bet and the bet is published. When the bet is placed, the dealer will hand out cards. The PubSubServer will notify the Subscriber when the event occurs. The Subscriber then invokes an event and the MainWindow displays the cards to the user. 
 
-The User can then choose to ask for more cards or stand. In this case the User choses to Stand. This event is published to the PubSubServer. Then the PubSubServer receives an event about the game being done and the Subscriber and MainWindow is notified. MainWindow then displays the result of the game to the user.
+The user can then choose to ask for more cards or stand. In this case the user choses to stand. This event is published to the PubSubServer. Then the PubSubServer receives a game over event and the Subscriber and the MainWindow is notified. The MainWindow displays the result of the game to the user.
 
-\myFigure{SequenceDiagramClient}{Client sequence diagram }{fig:client_sq}{0.88}
+\myFigure{SequenceDiagramClient}{Client sequence diagram }{fig:client_sq}{1}
 \FloatBarrier
 
 \section{Design and implementation of server}
-The server in this context is the Dealer. The Dealer furthermore uses classes from the Shared project and communicates with the publish subscribe server.
+The server in this context is the dealer. It uses classes from the Shared project and communicates with the PubSubServer.
 
 The graphical user interface of the server is shown in figure \ref{fig:server_gui}. The dealer can start a new game when players have joined the table. The dealer can also see its own cards and total value of these cards.  
 
-\myFigure{server_gui}{A dealers graphical user interface }{fig:server_gui}{0.5}
+\myFigure{server_gui}{A dealer's graphical user interface }{fig:server_gui}{0.5}
 \FloatBarrier
 
 \subsection{Class diagram}
-The servers graphical user interface is developed with WPF. This is called the MainWiew. Through the MainWiew the dealer can start a new game and see the dealers card. The dealer uses the Utils class to shuffle the cards. 
+The servers graphical user interface is developed with WPF. This is called the MainWindow. Through the MainWindow the dealer can start a new game and see the dealers card. The dealer uses the Utils class to shuffle the cards. 
 
 The dealer uses the publisher class to for example publish the cards to the players. The dealer furthermore subscribes on for example bets coming from the players.
 
@@ -90,11 +92,11 @@ The dealer uses the publisher class to for example publish the cards to the play
 \subsection{Sequence diagram}
 The behavior of the server is described in figure \ref{fig:server_sq}. Similar to the other sequence diagrams it is simplified by not writing all parameters being passed to the methods, this is done to describe the context and give an overview. The diagram has three objects/classes from the server project: MainWindow, Publisher and Subscriber. The PubSubServer is added as an entity in the diagram to show how the PubSubServer relates to the classes. The Publisher, Subscriber and PubSubServer communicates through sockets
 
-When the Dealer application is opened it automatically subscribes to a topic. The Dealer then starts the game and publishes an event that the game is started.
+When the dealer application is opened it automatically subscribes to a topic. The dealer then starts the game and publishes an event that the game is started.
 
-After the game has started Players can bet. In this sequence diagram only one Player is playing at the table and only one bet event is received. After the Dealer has received bets it hands out cards by publishing the message. 
+After the game has started Players can bet. In this sequence diagram only one Player is playing at the table and only one bet event is received. After the dealer has received bets it hands out cards by publishing the message. 
 
-The Players can then choose to stand or ask for more cards. In this scenario the event received is Stand. The Dealer then finishes the game and publishes GameOver to the player.
+The Players can then choose to stand or ask for more cards. In this scenario the event received is Stand. The dealer then finishes the game and publishes GameOver to the player.
 
 \myFigure{SequenceDiagramServer}{Server sequence diagram }{fig:server_sq}{0.95}
 \FloatBarrier
