@@ -3,50 +3,50 @@
 
 \section{Intro to requirements for the exercise project}
 
-The goal for this project is to develop a distributed blackjack card game. For the development, some of the concepts and patterns from the TI-ARDI course will be used, as specified in section \ref{chp:patterns}. 
+The goal for this project is to develop a distributed blackjack card game. For the development, some of the concepts and patterns from the TIARDI course will be used, as specified in section \ref{chp:patterns}. 
 
-Players will be implemented as clients that will connect to a server, which is the dealer, via a network socket. The players will then interact with the dealer as if playing a real Blackjack game. The rules for the Blackjack game will be implemented, but only to the extent that it makes sense for the project. I.e. splitting cards, doubling down and insurance will not be implemented, as it is not strictly necessary mechanisms for being able to play the game. 
+Players will be implemented as clients that will connect to a server, which is the dealer, via a network socket. The players will then interact with the dealer as if playing a real Blackjack game. The rules for the Blackjack game will be implemented, but only to the extent that it makes sense for the project, i.e. splitting cards, doubling down and insurance will not be implemented, as it is not strictly necessary mechanisms for being able to play the game. 
 
-The description for this project gives some requirements, guiding the development of the Blackjack card game.
 \subsection{Requirements}
+The following requirements are given.
 \begin{enumerate}  
 	\item Players must be implemented as clients
 	\item The dealer must be implemented as a server
 	\item Connection between client and server must be established through a network socket
 	\item More than one client must be able to establish connection
-	\item The decision to draw additional cards has to be made by the player within a timeout window
+	\item The decision to draw additional cards has to be made by the player within a time out window
 	\item Players must be able to specify an amount of money to bet
 \end{enumerate}
 
-\subsection{Blackjack Rules}
+\subsection{Blackjack rules}
 In Blackjack, one or more players plays against the dealer, seeing which one of them has the best hand. The best hand is evaluated from two cards, dealt to both the players and the dealer. The main objective for the players is to have a higher total hand value than the dealer has, without it being above 21.
  
-The cards dealt by the dealer are from a standard 52 cards deck, and each card has a value, with the exception of the Ace, which can have two values, 1 or 11. Jacks, Kings and Queens have a value of 10.  
+The cards dealt by the dealer are from a standard 52 cards deck and each card has a value. Ace can be either 1 or 11. Jacks, Kings and Queens have a value of 10.  
 
 One of the cards that the player gets from the dealer is face down and the other is faced up. The same occurs for the dealer. This means that neither the dealer or player can see all cards. Players may draw additional cards as long as the total values does not exceed 21. If a player or the dealer exceeds 21, they lose. If the dealer and player has the same value, the player will win.
 
 \section{Patterns used in the solution}
 \label{chp:patterns}
-The publisher/subscriber pattern has been chosen for this project. The pattern is a widely used message passing pattern, for communication in a distributed system. The pattern is used to decouple entities in an application. Three different types of decoupling can be achieved: \emph{space decoupling}, \emph{Time decoupling} and \emph{flow decoupling}. The publish/subscriber pattern decouples in all three. 
+The Publish/Subscribe pattern has been chosen for this project. The pattern is a widely used message passing pattern, for communication in a distributed system. The pattern is used to decouple entities in an application. Three different types of decoupling can be achieved: \emph{space decoupling}, \emph{time decoupling} and \emph{flow decoupling}. The Publish/Subscribe pattern decouples in all three. 
 
 A message queue will be used to ensure time decoupling this will be elaborated in section \ref{sec:time}.
 
 \subsection{Space decoupling}
-Space decoupling is that the publishers and the subscribers does not know about each other. In publisher/subscribe pattern the two are decoupled in space by using an event service. The event service will then mediate the messages between the publisher and the subscriber so that the two do not need to know each other. The subscriber will just subscribe to specific content through the event service and the publisher will publish messages to the event service. In figure \ref{fig:space} the principle is shown
+Decoupling in space ensures that the publishers and the subscribers does not know about each other. In Publish/Subscribe pattern the two are decoupled in space by using an event service. The event service will then mediate the messages between the publishers and the subscribers so that the two do not need to know each other. The subscriber will subscribe to specific information through the event service and the publisher will publish messages to the event service. In figure \ref{fig:space} the principle is shown.
 
 \myFigure{space}{Space decoupling}{fig:space}{0.8}
 
 \subsection{Time decoupling}
 \label{sec:time}
-The publisher/subscriber pattern is also time decoupled. As shown in the upper part of figure \ref{fig:time} the publisher can publish content to the event service while the subscriber is disconnected. In the lower part of figure \ref{fig:time}, the subscriber later on receives the content it has subscribed for, even though the publisher is disconnected at this very moment. To ensure time decoupling a message queue will be used on the Event Service. If the subscriber of a topic is offline the message will be stored in the message queue until the subscriber becomes available again. When the subscriber is available again the subscriber will receive the message.
+The Publish/Subscribe pattern is also time decoupled. As shown in the upper part of figure \ref{fig:time} the publisher can publish information to the event service while the subscriber is disconnected. In the lower part of figure \ref{fig:time}, the subscriber later on receives the information it has subscribed for, even though the publisher is disconnected at this very moment. To ensure time decoupling a message queue will be used on the event service. If the subscriber is offline the message will be stored in the message queue until the subscriber is online again. It will then receive the message.
 
 \myFigure{time}{Time decoupling}{fig:time}{0.8}
 \FloatBarrier
 
 \subsection{Flow decoupling}
-The last mechanism that the publisher/subscriber pattern holds is the decoupling in flow. The publisher will not get blocked when producing events. The flow on the subscriber will not be interrupted, as it can be notified about an incoming event while it concurrently is processing another activity.
+Flow decoupling is also achieved with the use of Publish/Subscribe pattern. The publisher will not get blocked when producing events. The flow on the subscriber will not be interrupted, as it can be notified about an incoming event while it concurrently is processing another activity.
 \myFigure{flow}{Flow decoupling}{fig:flow}{0.8}
 
-\section{Why Publisher/subscribe pattern}
-Because of the high degree of decoupling the publisher/subscribe pattern is chosen for the implementation of the blackjack game. 
-The publish/subscribe pattern will be implemented as topic-based. This approach allows the possibility of easily dividing different blackjack tables in different topics. The topics will in this project use URL like strings.
+\subsection{Why these patterns}
+Because of the high degree of decoupling the Publish/Subscribe pattern is chosen for the implementation of the distributed blackjack game. 
+The Publish/Subscribe pattern will be implemented as topic-based. This approach allows the possibility of easily dividing different blackjack tables in different topics. The topics will in this project use URL like strings. Furthermore the message queue is used for achieving time decoupling.
