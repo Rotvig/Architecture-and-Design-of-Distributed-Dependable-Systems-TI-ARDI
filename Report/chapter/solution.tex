@@ -2,15 +2,15 @@
 This chapter will explain and discuss the chosen solution for implementing the system described in chapter \ref{chp:intro}.
 
 \section{Discussion of architecture decisions}
-The architecture is based on the Publish/Subscribe pattern. As shown in figure \ref{fig:basicArc} the dealer and players are decoupled with a Publish/Subscribe server. This decouples the clients and servers in both time, space and flow. By decoupling in space the participants do not need to know each other and it is therefore easier to replace a client or server implementation. Decoupling clients and servers in flow will ensure that they do not block each other. Decoupling in time will ensure that the participants do not need to be online at the same time. It is relevant to note that the time decoupling is difficult in a game scenario as multiple players will be forced to wait for a client. A specific game relevant time decoupling is therefore implemented in this solution.
+The architecture is based on the Publish/Subscribe pattern. As shown in figure \ref{fig:basicArc} the dealer and players are decoupled with an Event Service. This decouples the clients and servers in both time, space and flow. By decoupling in space the participants do not need to know each other and it is therefore easier to replace a client or server implementation. Decoupling clients and servers in flow will ensure that they do not block each other. Decoupling in time will ensure that the participants do not need to be online at the same time. It is relevant to note that the time decoupling is difficult in a game scenario as multiple players will be forced to wait for a client. A specific game relevant time decoupling is therefore implemented in this solution.
 
 \myFigure{basicArc}{System Architecture}{fig:basicArc}{0.8}
-Other patterns could also have been used in the solution. For example the Acceptor/Connector pattern could have been used for decoupling initialization of connection and the concrete service handling. This would have ensured that a new initialization strategy could more easily have been implemented as it would have been decoupled from the actual processing. Also the leader/follower pattern could have been implemented to execute each publish message. Other patterns could therefore have been used and the overall design would have benefited from it.
+Other patterns could also have been used in the solution. For example the Acceptor/Connector pattern could have been used for decoupling initialization of connection and the concrete service handling. By using the Acceptor/Connector pattern, implementing a new initialization strategy or processing strategy would have been easier. Also the Leader/Follower pattern could have been implemented to execute each publish of a message. Other patterns could therefore have been used and the overall design would have benefited from it.
 
 This solution is though focused on the Publish/Subscribe pattern to drive the architecture and ensure a high degree of decoupling in both time, flow and space. 
 
 \section{Deployment diagram}
-The dealer, Publish/Subscribe server and players will all be deployed on different hosts. The different entities will then communicate through an UDP socket using topic-based messages. The player and dealer will subscribe to specific topics through the Publish/Subscribe server.
+The dealer, event service and players will all be deployed on different hosts. In the implementation the event service is called PubSubServer. The different entities will then communicate through an UDP socket using topic-based messages. The player and dealer will subscribe to specific topics through the Publish/Subscribe server.
 
 \myFigure{Deployment}{Deployment diagram }{fig:deploy}{1}
 
