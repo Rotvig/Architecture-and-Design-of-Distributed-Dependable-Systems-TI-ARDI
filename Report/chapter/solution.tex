@@ -10,7 +10,7 @@ Other patterns could also have been used in the solution. For example the Accept
 This solution is though focused on the Publish/Subscribe pattern to drive the architecture and ensure a high degree of decoupling in both time, flow and space. 
 
 \section{Deployment diagram}
-The dealer, event service and players will all be deployed on different hosts. In the implementation the event service is called PubSubServer. The different entities will then communicate through an UDP socket using topic-based messages. The player and dealer will subscribe to specific topics through the Publish/Subscribe server.
+The dealer, event service and players will all be deployed on different hosts. In the implementation the event service is called PubSubServer. The different entities will then communicate through a UDP socket using topic-based messages. The player and dealer will subscribe to specific topics through the PubSubServer. This is explained in figure \ref{fig:deploy}.
 
 \myFigure{Deployment}{Deployment diagram }{fig:deploy}{1}
 
@@ -19,9 +19,9 @@ UDP is chosen as transport protocol because it is connectionless and faster than
 \section{Design and implementation}
 The software is divided into four different projects: Dealer, Player, PubSubServer and Shared. The Shared project contains classes used by both the Dealer, Player and PubSubServer. By using a shared project no code is copied and the game logic and Publish/Subscribe mechanism needed by both Player and Dealer can be placed in this project.
 
-A simplified overview of the system is showed in a sequence diagram in figure \ref{fig:system_sq}. Here the context of the Player, PubSubServer and Dealer is described in a game scenario. Bot Dealer and Player subscribes to a specific topic in the beginning. This topic would be the table name. The Dealer then starts the game and the Player bets. When the Player has placed a Bet the Dealer deals out cards. After receiving the cards the player chooses to stand and the Dealer sends the game result to the Player. 
+A simplified overview of the system is showed in a sequence diagram in figure \ref{fig:system_sq}. Here the context of the Player, PubSubServer and Dealer is described in a game scenario. Both Dealer and Player subscribes to a specific topic in the beginning. This topic is a table name. The Dealer then starts the game and the Player bets. When the Player has placed a Bet the Dealer deals out cards. After receiving the cards the Player chooses to stand and the Dealer sends the game result to the Player. 
 
-\myFigure{SequenceDiagramSystem}{system sequence diagram }{fig:system_sq}{0.95}
+\myFigure{SequenceDiagramSystem}{System sequence diagram }{fig:system_sq}{1}
 \FloatBarrier
 
 In the following sections the PubSubServer, Player and Dealer will be described in more depth.
