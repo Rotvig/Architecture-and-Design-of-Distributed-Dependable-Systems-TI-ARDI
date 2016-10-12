@@ -6,21 +6,13 @@ using System.Net.Sockets;
 
 namespace Shared
 {
-    public class Utils
+    public static class Utils
     {
         public static IPAddress GetLocalIp4Address()
         {
             return Dns.GetHostAddresses(Dns.GetHostName()).FirstOrDefault(ipa => ipa.AddressFamily == AddressFamily.InterNetwork);
         }
 
-        public const string TablePublishTopic = "Table 1";
-        public const string TableSubscribeTopic = "Sub Table 1";
-        public const int Timeout = 10000;
-
-    }
-
-    public static class Ext
-    {
         private static readonly Random Rng = new Random();
 
         /// <summary>

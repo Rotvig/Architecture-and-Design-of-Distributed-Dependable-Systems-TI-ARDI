@@ -15,17 +15,16 @@ namespace Dealer
         private Queue<Card> currentDeck;
         private List<Player> players;
         private List<Card> currentDealerCards;
+        private string publishTopic;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            Block1.Text = "Topic: " + Utils.TablePublishTopic;
-            Block2.Text = "Sub Topic: " + Utils.TableSubscribeTopic;
-
+            publishTopic = topic.Text.Trim();
             publisher = new Publisher();
             subscriber = new Subscriber();
-            subscriber.Subscribe(Utils.TableSubscribeTopic);
+            subscriber.Subscribe("Sub " + publishTopic);
             subscriber.NewMessage += (sender, @event) => Dispatcher.Invoke(() => NewMessage(@event.Message));
         }
 
@@ -67,7 +66,7 @@ namespace Dealer
         private void PlayerHits(Message message)
         {
             publisher.Publish(
-                Utils.TablePublishTopic,
+                publishTopic,
                 Event.Hit,
                 null,
                 new EventData
@@ -95,10 +94,10 @@ namespace Dealer
             currentDeck = DeckFactory.CreateDeck().Shuffle();
             button.IsEnabled = false;
 
-            publisher.Publish(Utils.TablePublishTopic, Event.GameStart, TimeSpan.FromSeconds(10));
+            publisher.Publish(publishTopic, Event.GameStart, TimeSpan.FromSeconds(10));
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(Utils.Timeout+1000);
+                Thread.Sleep(10000);
                 Dispatcher.Invoke(HandoutCards);
             });
         }
@@ -122,7 +121,7 @@ namespace Dealer
                 cards.Last().Facedown = true;
                 player.Cards = cards;
                 publisher.Publish(
-                    Utils.TablePublishTopic,
+                    publishTopic,
                     Event.HandoutCards,
                     timeSpan,
                     new EventData
@@ -164,7 +163,7 @@ namespace Dealer
                         prizeMoney = prizeMoney * 1.5;
                     }
 
-                    publisher.Publish(Utils.TablePublishTopic,
+                    publisher.Publish(publishTopic,
                         Event.GameOver,
                         null,
                         new EventData
@@ -177,7 +176,7 @@ namespace Dealer
                 }
                 else
                 {
-                    publisher.Publish(Utils.TablePublishTopic,
+                    publisher.Publish(publishTopic,
                         Event.GameOver,
                         null,
                         new EventData
@@ -248,6 +247,13 @@ namespace Dealer
             listBox.Items.Add(card.CardName);
 
             return PlayCards();
+        }
+
+        private void btn_topic_Click(object sender, RoutedEventArgs e)
+        {
+            subscriber.Unsubscribe();
+            publishTopic = topic.Text.Trim();
+            subscriber.Subscribe("Sub " + publishTopic);
         }
     }
 }
