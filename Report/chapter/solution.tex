@@ -82,21 +82,21 @@ The graphical user interface of the server is shown in figure \ref{fig:server_gu
 \FloatBarrier
 
 \subsection{Class diagram}
-The servers graphical user interface is developed with WPF. This is called the MainWindow. Through the MainWindow the dealer can start a new game and see the dealers card. The dealer uses the Utils class to shuffle the cards. 
+The server's graphical user interface is developed with WPF. This is called the MainWindow. Through the MainWindow the dealer can start a new game and see its cards. The dealer uses the Utils class to shuffle the cards. 
 
-The dealer uses the publisher class to for example publish the cards to the players. The dealer furthermore subscribes on for example bets coming from the players.
+The dealer uses the Publisher class to for example publish the cards to the players. The dealer furthermore subscribes on for example bets coming from the players.
 
-\myFigure{server_class}{Server class diagram }{fig:server_class}{0.7}
+\myFigure{server_class}{Server class diagram }{fig:server_class}{0.95}
 \FloatBarrier
 
 \subsection{Sequence diagram}
-The behavior of the server is described in figure \ref{fig:server_sq}. Similar to the other sequence diagrams it is simplified by not writing all parameters being passed to the methods, this is done to describe the context and give an overview. The diagram has three objects/classes from the server project: MainWindow, Publisher and Subscriber. The PubSubServer is added as an entity in the diagram to show how the PubSubServer relates to the classes. The Publisher, Subscriber and PubSubServer communicates through sockets
+The behavior of the server is described in figure \ref{fig:server_sq}. Similar to the other sequence diagrams it is simplified by not writing all parameters being passed to the methods, this is done to describe the context and give an overview. The diagram has three objects/classes from the server and shared project: MainWindow, Publisher and Subscriber. The PubSubServer is added as an entity in the diagram to show how the PubSubServer relates to the classes. The Publisher, Subscriber and PubSubServer communicates through sockets.
 
-When the dealer application is opened it automatically subscribes to a topic. The dealer then starts the game and publishes an event that the game is started.
+When the dealer application is opened it automatically subscribes to a default topic/table. A dealer can also choose to subscribe to a different topic/table. The user then starts the game and a message is published that the game has started.
 
-After the game has started Players can bet. In this sequence diagram only one Player is playing at the table and only one bet event is received. After the dealer has received bets it hands out cards by publishing the message. 
+After the game has started players can bet. In this sequence diagram only one player has joined the table and only one bet event is received. After the dealer has received bets it hands out cards by publishing a message. 
 
-The Players can then choose to stand or ask for more cards. In this scenario the event received is Stand. The dealer then finishes the game and publishes GameOver to the player.
+The players can then choose to stand or ask for more cards. In the scenario described in the sequence diagram the event received is stand. The dealer then finishes the game and publishes game over to the player.
 
-\myFigure{SequenceDiagramServer}{Server sequence diagram }{fig:server_sq}{0.95}
+\myFigure{SequenceDiagramServer}{Server sequence diagram }{fig:server_sq}{0.90}
 \FloatBarrier
