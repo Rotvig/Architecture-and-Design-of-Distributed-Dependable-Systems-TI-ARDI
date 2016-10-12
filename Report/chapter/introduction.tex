@@ -34,18 +34,18 @@ A message queue will be used to ensure time decoupling this will be elaborated i
 \subsection{Space decoupling}
 Decoupling in space ensures that the publishers and the subscribers does not know about each other. In Publish/Subscribe pattern the two are decoupled in space by using an event service. The event service will then mediate the messages between the publishers and the subscribers so that the two do not need to know each other. The subscriber will subscribe to specific information through the event service and the publisher will publish messages to the event service. In figure \ref{fig:space} the principle is shown.
 
-\myFigure{space}{Space decoupling}{fig:space}{0.8}
+\myFigure{space}{Space decoupling \citep{PubSub}}{fig:space}{0.8}
 
 \subsection{Time decoupling}
 \label{sec:time}
 The Publish/Subscribe pattern is also time decoupled. As shown in the upper part of figure \ref{fig:time} the publisher can publish information to the event service while the subscriber is disconnected. In the lower part of figure \ref{fig:time}, the subscriber later on receives the information it has subscribed for, even though the publisher is disconnected at this very moment. To ensure time decoupling a message queue will be used on the event service. If the subscriber is offline the message will be stored in the message queue until the subscriber is online again. It will then receive the message.
 
-\myFigure{time}{Time decoupling}{fig:time}{0.8}
+\myFigure{time}{Time decoupling \citep{PubSub}}{fig:time}{0.8}
 \FloatBarrier
 
 \subsection{Flow decoupling}
 Flow decoupling is also achieved with the use of Publish/Subscribe pattern. The publisher will not get blocked when producing events. The flow on the subscriber will not be interrupted, as it can be notified about an incoming event while it concurrently is processing another activity.
-\myFigure{flow}{Flow decoupling}{fig:flow}{0.8}
+\myFigure{flow}{Flow decoupling \citep{PubSub}}{fig:flow}{0.8}
 
 \subsection{Why these patterns}
 Because of the high degree of decoupling the Publish/Subscribe pattern is chosen for the implementation of the distributed blackjack game. 

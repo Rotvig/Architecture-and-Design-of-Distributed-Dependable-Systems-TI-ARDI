@@ -1,1 +1,8 @@
 \chapter{Conclusion}
+This project has dealt with implementing a distributed Blackjack game. Requirements were stated for the implementation in chapter \ref{chp:intro} and also design patterns from the course had to be used.
+
+The final implementation goes beyond the given requirements and allows multiple players and dealers to play the game at the same time at different tables. Also multiple design patterns from the course were used in the solution. Specifically the implementation is based on the Publish/Subscribe pattern and thereby ensures flow, time and space decoupling. Time decoupling was achieved by implementing a message queue were messages were stored until they could be delivered. This means that a player could disconnect during a game and when the player would reconnect, it would receive the messages sent while it was disconnected. A time out was used to ensure that other players and the dealer could finish the game even though a player disconnected.
+
+The solution was implemented in four code projects: Dealer, Player, Shared and PubSubServer. The Shared project ensured that code needed for multiple projects were not copied. A graphical user interface was implemented in WPF to let as user control the dealer and player application.  
+
+The final implementation of the Blackjack game is easy to modify and extend as it uses the Publish/Subscribe pattern and is decoupled in flow, space and time. Additionally it fulfills the requirements and is a well implemented solution for the given exercise.

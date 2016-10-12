@@ -5,7 +5,7 @@ This chapter will explain and discuss the chosen solution for implementing the s
 The architecture is based on the Publish/Subscribe pattern. As shown in figure \ref{fig:basicArc} the dealer and players are decoupled with an Event Service. This decouples the clients and servers in both time, space and flow. By decoupling in space the participants do not need to know each other and it is therefore easier to replace a client or server implementation. Decoupling clients and servers in flow will ensure that they do not block each other. Decoupling in time will ensure that the participants do not need to be online at the same time. It is relevant to note that the time decoupling is difficult in a game scenario as multiple players will be forced to wait for a client. A specific game relevant time decoupling is therefore implemented in this solution.
 
 \myFigure{basicArc}{System Architecture}{fig:basicArc}{0.8}
-Other patterns could also have been used in the solution. For example the Acceptor/Connector pattern could have been used for decoupling initialization of connection and the concrete service handling. By using the Acceptor/Connector pattern, implementing a new initialization strategy or processing strategy would have been easier. Also the Leader/Follower pattern could have been implemented to execute each publish of a message. Other patterns could therefore have been used and the overall design would have benefited from it.
+Other patterns could also have been used in the solution. For example the Acceptor/Connector pattern could have been used for decoupling initialization of connection and the concrete service handling. By using the Acceptor/Connector pattern, implementing a new initialization strategy or processing strategy would have been easier. Also the Leader/Followers pattern could have been implemented to execute each publish of a message. Other patterns could therefore have been used and the overall design would have benefited from it.
 
 This solution is though focused on the Publish/Subscribe pattern to drive the architecture and ensure a high degree of decoupling in both time, flow and space. 
 
@@ -78,7 +78,7 @@ The server in this context is the dealer. It uses classes from the Shared projec
 
 The graphical user interface of the server is shown in figure \ref{fig:server_gui}. The dealer can start a new game when players have joined the table. The dealer can also see its own cards and total value of these cards.  
 
-\myFigure{server_gui}{A dealer's graphical user interface }{fig:server_gui}{0.5}
+\myFigure{server_gui}{A dealer's graphical user interface }{fig:server_gui}{1}
 \FloatBarrier
 
 \subsection{Class diagram}
